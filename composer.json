@@ -1,0 +1,5 @@
+{
+    "require": {
+        "spomky-labs/php-aes-gcm": "^1.2"
+    }
+}
