@@ -10,7 +10,7 @@
  * Plugin URI:        https://bitbucket.org/Crypteron/cipherwp
  * Description:       Adds military grade encryption and tamper protection to WordPress
  * Version:           1.0.0
- * Author:            Yaron Guez
+ * Author:            Crypteron
  * Author URI:        https://crypteron.com
  * License:           GPL-3.0+
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
@@ -31,8 +31,9 @@ function run_encrypt_wp(){
 	 * The core plugin class
 	 */
 	require plugin_dir_path( __FILE__ ) . 'classes/setup/class-encrypt-wp-init.php';
-	$plugin = new EncryptWP_Init();
+	$plugin = new EncryptWP_Init(__FILE__);
 	$plugin->run();
 }
 
-add_action('plugins_loaded', 'run_encrypt_wp');
+// Run after the latest version of Trestian WP Managers has been loaded
+add_action('trestian_wp_managers_loaded', 'run_encrypt_wp');

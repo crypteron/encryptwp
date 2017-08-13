@@ -19,7 +19,7 @@ class EncryptWP_Manager {
 			throw new EncryptWP_Exception('No key defined. Define ENCRYPT_WP_KEY within wp-config.php. Generate one with EncryptWP_Manager->generate_key()');
 		}
 
-		return hex2bin(ENCRYPT_WP_KEY);
+		return base64_decode(ENCRYPT_WP_KEY);
 	}
 
 	/**
@@ -36,7 +36,7 @@ class EncryptWP_Manager {
 		}
 		$key_binary = random_bytes($bytes);
 
-		return bin2hex($key_binary);
+		return base64_encode($key_binary);
 	}
 
 	/**
@@ -47,17 +47,19 @@ class EncryptWP_Manager {
 	 *
 	 * @return string - Encrypted binary data including header and tag
 	 */
-	public function encrypt($clear_text = null, $aad = null){
+	public function encrypt($clear_text = null, $aad = null, $base64 = true){
 		$key = $this->get_key();
 		$iv = $this->generate_iv();
-		$data = hex2bin($clear_text);
-		$aad = hex2bin($aad);
 
-		$ciphertext_with_tag = AESGCM::encryptAndAppendTag($key, $iv, $data, $aad, EncryptWP_Constants::TAG_SIZE_BITS);
+		$ciphertext_with_tag = AESGCM::encryptAndAppendTag($key, $iv, $clear_text, $aad, EncryptWP_Constants::TAG_SIZE_BITS);
 
 		$header = new CipherCoreHeader();
 		$header->IV = $iv;
-		return $header->serialize() . $ciphertext_with_tag;
+		$encrypted_record =$header->serialize() . $ciphertext_with_tag;
+		if($base64){
+			$encrypted_record = base64_encode($encrypted_record);
+		}
+		return $encrypted_record;
 	}
 
 	/**
@@ -68,14 +70,16 @@ class EncryptWP_Manager {
 	 *
 	 * @return string - Decrypted clear text
 	 */
-	public function decrypt($encrypted_record, $aad = null){
+	public function decrypt($encrypted_record, $aad = null, $base64 = true){
+		if($base64){
+			$encrypted_record = base64_decode($encrypted_record);
+		}
 		$header_container = CipherCoreHeader::deserialize($encrypted_record);
 		$iv = $header_container->header->IV;
-		$cipher_text = substr($encrypted_record, $header_container->bytesRead);
-		$aad = hex2bin($aad);
+		$cipher_text = substr($encrypted_record, $header_container->bytesRead );
 
-		$clear_text_binary = AESGCM::decryptWithAppendedTag($this->get_key(), $iv, $cipher_text, $aad, EncryptWP_Constants::TAG_SIZE_BITS);
-		return bin2hex($clear_text_binary);
+		$clear_text = AESGCM::decryptWithAppendedTag($this->get_key(), $iv, $cipher_text, $aad, EncryptWP_Constants::TAG_SIZE_BITS);
+		return $clear_text;
 
 	}
 
