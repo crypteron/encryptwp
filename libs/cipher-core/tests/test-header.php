@@ -1,17 +1,16 @@
-#!/usr/bin/env php
 <?php
 namespace CipherCore\v1;
 require_once '../cipher-core.php';
 
-class HeaderTest extends PHPUnit\Framework\TestCase {
+class HeaderTest extends \PHPUnit\Framework\TestCase {
 
-	protected $serializer;
+  protected $serializer;
+  
+  function setUp() {
+    $this->serializer = new Serializer();
+  }
 
-	public function __construct() {
-		$this->serializer = new Serializer();
-	}
-
-	/**
+  /**
     * @dataProvider provider
     */
   public function testSerialize($expectedHeader, $originalHeader) {
