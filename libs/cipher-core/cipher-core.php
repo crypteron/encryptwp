@@ -31,6 +31,7 @@ require_once 'classes/models/class-cipher-core-header.php';
 require_once 'classes/models/class-cipher-core-header-container.php';
 require_once 'classes/models/class-cipher-suite.php';
 require_once 'classes/models/class-constants.php';
+require_once 'classes/models/class-dek-info.php';
 
 // Container class.
 class CipherCore{

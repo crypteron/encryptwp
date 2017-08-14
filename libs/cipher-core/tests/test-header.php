@@ -2,6 +2,14 @@
 namespace CipherCore\v1;
 require_once '../cipher-core.php';
 
+function convertHexField($field) {
+  if($field === NULL) {
+    return NULL;
+  } else {
+    return hex2bin($field);
+  }
+}
+
 class HeaderTest extends \PHPUnit\Framework\TestCase {
 
   protected $serializer;
@@ -24,22 +32,30 @@ class HeaderTest extends \PHPUnit\Framework\TestCase {
   public function testDeserialize($expectedHeader, $originalHeader) {
     $deserializedHeader = $this->serializer->deserialize($expectedHeader);
     $this->assertEquals(mb_strlen($expectedHeader, '8bit'), $deserializedHeader->bytesRead);
-    $this->assertEquals((array)$originalHeader, (array)$deserializedHeader->header);
+    $this->assertEquals($originalHeader->toAvroObj(), $deserializedHeader->header->toAvroObj());
   }
 
   public function provider() {
     $testHeadersJson = file_get_contents(__DIR__  . "/test-header-data.json");
-    $testHeaders = json_decode($testHeadersJson);
+    $testHeaders = json_decode($testHeadersJson, true);
 
     $convertTestHeader = function($testHeader) {
-      $expectedHeader = base64_decode($testHeader->headerBytes);
+      $expectedHeader = convertHexField($testHeader['headerBytes']);
+      $headerDto = $testHeader['header'];
       $originalHeader = new CipherCore_Header();
-      foreach($testHeader->header as $key => $value) {
-        if(is_string($value)) {
-          $originalHeader->$key = base64_decode($value);
-        } else {
-          $originalHeader->$key = $value;
-        }
+      $originalHeader->Token = convertHexField($headerDto['Token']);
+      $originalHeader->SecPartId = $headerDto['SecPartId'];
+      $originalHeader->SecPartVer = $headerDto['SecPartVer'];
+      $originalHeader->CipherSuite = $headerDto['CipherSuite'];
+      $originalHeader->IV = convertHexField($headerDto['IV']);
+      $originalHeader->AAD = convertHexField($headerDto['AAD']);
+      $originalHeader->CellAttributes = $headerDto['CellAttributes'];
+      if($headerDto['DekInfo']) {
+        $DekInfo = $headerDto['DekInfo'];
+        $originalHeader->DekInfo = new DekInfo();
+        $originalHeader->DekInfo->DekCipherSuite = $DekInfo['DekCipherSuite'];
+        $originalHeader->DekInfo->DekIV = convertHexField($DekInfo['DekIV']);
+        $originalHeader->DekInfo->DekEnc = convertHexField($DekInfo['DekEnc']);
       }
       return array('expectedHeader' => $expectedHeader, 'originalHeader' => $originalHeader);
     };

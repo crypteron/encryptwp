@@ -1,48 +1,16 @@
 [
   {
     "header": {
-      "Token": "ERERERERERERERERERERERERERERERERERERERERERE=",
+      "Token": null,
       "SecPartId": "",
       "SecPartVer": 1,
       "CipherSuite": 20,
-      "IV": "GyHZVO37DO3JHW6k",
-      "AAD": "ra2tra2tra2tra2tra2trQ==",
-      "CellAttributes": 0,
-      "DekCipherSuite": 3,
-      "DekIV": null,
-      "DekEnc": "NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ="
-    },
-    "headerBytes": "zbMCQBERERERERERERERERERERERERERERERERERERERERERAAIoGBsh2VTt+wztyR1upAIgra2tra2tra2tra2tra2trQAGAAJANDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ="
-  },
-  {
-    "header": {
-      "Token": "ERERERERERERERERERERERERERERERERERERERERERE=",
-      "SecPartId": "",
-      "SecPartVer": 1,
-      "CipherSuite": 20,
-      "IV": "mgIsR6Elvrwd2mZE",
-      "AAD": "ra2tra2tra2tra2tra2trQ==",
-      "CellAttributes": 0,
-      "DekCipherSuite": 0,
-      "DekIV": null,
-      "DekEnc": null
-    },
-    "headerBytes": "zbMCQBERERERERERERERERERERERERERERERERERERERERERAAIoGJoCLEehJb68HdpmRAIgra2tra2tra2tra2tra2trQAAAAA="
-  },
-  {
-    "header": {
-      "Token": "ERERERERERERERERERERERERERERERERERERERERERE=",
-      "SecPartId": "",
-      "SecPartVer": 1,
-      "CipherSuite": 20,
-      "IV": "aFNgHgVYs6XC5jur",
+      "IV": "121212121212121212121212",
       "AAD": null,
       "CellAttributes": 0,
-      "DekCipherSuite": 0,
-      "DekIV": null,
-      "DekEnc": null
+      "DekInfo": null
     },
-    "headerBytes": "zbMCQBERERERERERERERERERERERERERERERERERERERERERAAIoGGhTYB4FWLOlwuY7qwAAAAAA"
+    "headerBytes": "cdb30000022818121212121212121212121212000000"
   },
   {
     "header": {
@@ -50,13 +18,62 @@
       "SecPartId": "",
       "SecPartVer": 1,
       "CipherSuite": 20,
-      "IV": "DxjeE9nbuqZBpzWT",
+      "IV": "121212121212121212121212",
       "AAD": null,
       "CellAttributes": 0,
-      "DekCipherSuite": 0,
-      "DekIV": null,
-      "DekEnc": null
+      "DekInfo": {
+        "DekCipherSuite": 3,
+        "DekIV": null,
+        "DekEnc": "3434343434343434343434343434343434343434343434343434343434343434"
+      }
     },
-    "headerBytes": "zbMAAAIoGA8Y3hPZ27qmQac1kwAAAAAA"
+    "headerBytes": "cdb30000022818121212121212121212121212000002060002403434343434343434343434343434343434343434343434343434343434343434"
+  },
+  {
+    "header": {
+      "Token": null,
+      "SecPartId": "",
+      "SecPartVer": 1,
+      "CipherSuite": 20,
+      "IV": "121212121212121212121212",
+      "AAD": "adadadadadadadadadadadadadadadad",
+      "CellAttributes": 0,
+      "DekInfo": {
+        "DekCipherSuite": 3,
+        "DekIV": null,
+        "DekEnc": "3434343434343434343434343434343434343434343434343434343434343434"
+      }
+    },
+    "headerBytes": "cdb300000228181212121212121212121212120220adadadadadadadadadadadadadadadad0002060002403434343434343434343434343434343434343434343434343434343434343434"
+  },
+  {
+    "header": {
+      "Token": "1111111111111111111111111111111111111111111111111111111111111111",
+      "SecPartId": "",
+      "SecPartVer": 1,
+      "CipherSuite": 20,
+      "IV": "121212121212121212121212",
+      "AAD": "adadadadadadadadadadadadadadadad",
+      "CellAttributes": 0,
+      "DekInfo": null
+    },
+    "headerBytes": "cdb302401111111111111111111111111111111111111111111111111111111111111111000228181212121212121212121212120220adadadadadadadadadadadadadadadad0000"
+  },
+  {
+    "header": {
+      "Token": "1111111111111111111111111111111111111111111111111111111111111111",
+      "SecPartId": "",
+      "SecPartVer": 1,
+      "CipherSuite": 20,
+      "IV": "121212121212121212121212",
+      "AAD": "adadadadadadadadadadadadadadadad",
+      "CellAttributes": 0,
+      "DekInfo": {
+        "DekCipherSuite": 3,
+        "DekIV": null,
+        "DekEnc": "3434343434343434343434343434343434343434343434343434343434343434"
+      }
+    },
+    "headerBytes": "cdb302401111111111111111111111111111111111111111111111111111111111111111000228181212121212121212121212120220adadadadadadadadadadadadadadadad0002060002403434343434343434343434343434343434343434343434343434343434343434"
   }
 ]

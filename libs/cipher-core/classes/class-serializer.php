@@ -14,8 +14,12 @@ class Serializer {
 	private $headerSchema;
 
 	public function __construct() {
-		$headerSchemaJson = file_get_contents(__DIR__ .'/../assets/header-v3.avpr');
-		$this->headerSchema = \AvroSchema::parse($headerSchemaJson);
+		$avprSchemaJson = file_get_contents(__DIR__ .'/../assets/header-v3.avpr');
+		$avprSchema = json_decode($avprSchemaJson, true);
+		$schemata = new \AvroNamedSchemata();
+		foreach($avprSchema['types'] as $headerSchema) {
+			$this->headerSchema = \AvroSchema::real_parse($headerSchema, null, $schemata);
+		}
 	}
 
 	/**
@@ -54,7 +58,8 @@ class Serializer {
 		$writer = new \AvroIODatumWriter($this->headerSchema);
 		$encoder = new \AvroIOBinaryEncoder($io);
 		$io->write(self::MAGIC_BLOCK);
-		$writer->write($header->toAvroObj(), $encoder);
+		$headerDto = $header->toAvroObj();
+		$writer->write($headerDto, $encoder);
 		return $io->string();
 	}
 

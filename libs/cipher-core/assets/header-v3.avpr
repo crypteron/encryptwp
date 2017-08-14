@@ -1,51 +1,69 @@
 {
-  "type": "record",
-  "name": "CipherDbHeaderDTO",
-  "fields": [
+  "protocol": "Headers",
+  "namespace": "Crypteron.Headers.V3",
+  "doc": "* Crypteron's CipherHeader",
+  "types": [
     {
-      "name": "Token",
-      "type": ["null", "bytes"],
-      "default": null
+      "type": "record",
+      "name": "DekInfoDto",
+      "fields": [
+        {
+          "name": "DekCipherSuite",
+          "type": "int"
+        },
+        {
+          "name": "DekIV",
+          "type": ["null", "bytes"],
+          "default": null
+        },
+        {
+          "name": "DekEnc",
+          "type": ["null", "bytes"],
+          "default": null
+        }
+      ]
     },
     {
-      "name": "SecPartId",
-      "type": "string"
-    },
-    {
-      "name": "SecPartVer",
-      "type": "int"
-    },
-    {
-      "name": "CipherSuite",
-      "type": "int",
-      "default": 2
-    },
-    {
-      "name": "IV",
-      "type": "bytes"
-    },
-    {
-      "name": "AAD",
-      "type": ["null", "bytes"],
-      "default": null
-    },
-    {
-      "name": "CellAttributes",
-      "type": "int"
-    },
-    {
-      "name": "DekCipherSuite",
-      "type": "int"
-    },
-    {
-      "name": "DekIV",
-      "type": ["null", "bytes"],
-      "default": null
-    },
-    {
-      "name": "DekEnc",
-      "type": ["null", "bytes"],
-      "default": null
+      "type": "record",
+      "name": "CipherHeaderDTO",
+      "fields": [
+        {
+          "name": "Token",
+          "type": ["null", "bytes"],
+          "default": null
+        },
+        {
+          "name": "SecPartId",
+          "type": "string"
+        },
+        {
+          "name": "SecPartVer",
+          "type": "int"
+        },
+        {
+          "name": "CipherSuite",
+          "type": "int",
+          "default": 2
+        },
+        {
+          "name": "IV",
+          "type": "bytes"
+        },
+        {
+          "name": "AAD",
+          "type": ["null", "bytes"],
+          "default": null
+        },
+        {
+          "name": "CellAttributes",
+          "type": "int"
+        },
+        {
+          "name": "DekInfo",
+          "type": ["null", "DekInfoDto"]
+        }
+      ]
     }
-  ]
+  ],
+  "messages": {}
 }
