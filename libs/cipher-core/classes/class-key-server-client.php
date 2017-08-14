@@ -10,7 +10,7 @@ class Key_Server_Client implements IKeyServerClient {
 	public function read_sec_part_key( $key_request ) {
 
 		// TO DO - Implement key server call and response
-		return base64_decode(ENCRYPT_WP_KEY);
+		return base64_decode(CIPHER_CORE_KEY);
 
 	}
 
