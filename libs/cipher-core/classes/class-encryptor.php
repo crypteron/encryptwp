@@ -23,6 +23,20 @@ class Encryptor {
 		return random_bytes(Constants::IV_SIZE_BYTES);
 	}
 
+	public function encryptWithParameters($plaintext, $key, $iv, $aad, $base64) {
+		$ciphertext_with_tag = AESGCM::encryptAndAppendTag($key, $iv, $plaintext, $aad, Constants::TAG_SIZE_BITS);
+		
+		$header = new CipherCore_Header();
+		$header->IV = $iv;
+		$header->AAD = $aad;
+		$serialized_header = $this->serializer->serialize($header);
+
+		$encrypted_record =  $serialized_header . $ciphertext_with_tag;
+		if($base64) {
+			$encrypted_record = base64_encode($encrypted_record);
+		}
+		return $encrypted_record;
+	}
 
 	/**
 	 * Encrypts text and additional data with AES-GCM
@@ -32,22 +46,26 @@ class Encryptor {
 	 *
 	 * @return string - Encrypted binary data including header and tag
 	 */
-	public function encrypt($clear_text = null, $aad = null, $base64 = true){
+	public function encrypt($clear_text = null, $aad = null, $base64 = true) {
 		// TODO - assemble key request object
 		$key = $this->key_server_client->read_sec_part_key(null);
 		$iv = $this->generate_iv();
 
-		$ciphertext_with_tag = AESGCM::encryptAndAppendTag($key, $iv, $clear_text, $aad, Constants::TAG_SIZE_BITS);
-
-		$header = new CipherCore_Header();
-		$header->IV = $iv;
-		$serialized_header = $this->serializer->serialize($header);
-		$encrypted_record =  $serialized_header. $ciphertext_with_tag;
-
-		if($base64){
-			$encrypted_record = base64_encode($encrypted_record);
-		}
+		$encrypted_record = $this->encryptWithParameters($clear_text, $key, $iv, $aad, $base64);
 		return $encrypted_record;
+	}
+
+	public function decryptWithParameters($encrypted, $key, $base64) {
+		if($base64) {
+			$encrypted = base64_decode($encrypted);
+		}
+		$header_container = $this->serializer->deserialize($encrypted);
+		$iv = $header_container->header->IV;
+		$aad = $header_container->header->AAD;
+		$ciphertext = substr($encrypted, $header_container->bytesRead);
+
+		$plaintext = AESGCM::decryptWithAppendedTag($key, $iv, $ciphertext, $aad, Constants::TAG_SIZE_BITS);
+		return $plaintext;
 	}
 
 	/**
@@ -58,19 +76,12 @@ class Encryptor {
 	 *
 	 * @return string - Decrypted clear text
 	 */
-	public function decrypt($encrypted_record, $aad = null, $base64 = true){
-		if($base64){
-			$encrypted_record = base64_decode($encrypted_record);
-		}
-		$header_container = $this->serializer->deserialize($encrypted_record);
-		$iv = $header_container->header->IV;
-		$cipher_text = substr($encrypted_record, $header_container->bytesRead );
+	public function decrypt($encrypted_record, $base64 = true) {
+		// TODO - assemble key request object
 		$key = $this->key_server_client->read_sec_part_key(null);
 
-		$clear_text = AESGCM::decryptWithAppendedTag($key, $iv, $cipher_text, $aad, Constants::TAG_SIZE_BITS);
+		$clear_text = $this->decryptWithParameters($encrypted_record, $key, $base64);
 		return $clear_text;
-
 	}
-
 
 }

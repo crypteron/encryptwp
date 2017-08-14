@@ -1,6 +1,6 @@
 <?php
 namespace CipherCore\v1;
-require_once '../cipher-core.php';
+require_once 'cipher-core.php';
 
 function convertHexField($field) {
   if($field === NULL) {
