@@ -1,0 +1,60 @@
+<?php
+namespace CipherCore\v1;
+
+class Serializer {
+
+	/**
+	 * @const string
+	 */
+	const MAGIC_BLOCK = "\xCD\xB3";
+
+	/**
+	 * @var \AvroSchema
+	 */
+	private $headerSchema;
+
+	public function __construct() {
+		$headerSchemaJson = file_get_contents(__DIR__ .'/../assets/header-v3.avpr');
+		$this->headerSchema = \AvroSchema::parse($headerSchemaJson);
+	}
+
+	/**
+	 * Deserialize a header into a CipherCore_Header object and return a container with it and the bytes read
+	 *
+	 * @param $serialized_header string
+	 *
+	 * @return CipherCore_Header_Container
+	 * @throws CipherCore_Exception
+	 */
+	public function deserialize($serialized_header) {
+		$read = new \AvroStringIO($serialized_header);
+		$magicBlockLength = mb_strlen(self::MAGIC_BLOCK, '8bit');
+		$actualMagicBlock = $read->read($magicBlockLength);
+		if($actualMagicBlock !== self::MAGIC_BLOCK){
+			throw new CipherCore_Exception("Header magic block doesn't match");
+		}
+
+		$decoder = new \AvroIOBinaryDecoder($read);
+		$reader = new \AvroIODatumReader($this->headerSchema);
+		$deserializedHeader = new CipherCore_Header_Container();
+		$deserializedHeader->header    = (object)$reader->read($decoder);
+		$deserializedHeader->bytesRead = $read->tell();
+		return $deserializedHeader;
+	}
+
+	/**
+	 * Serialize a CipherCore_Header object into a string based on the Avro schema
+	 * @param $header CipherCore_Header
+	 *
+	 * @return string
+	 */
+	public function serialize($header) {
+		$io = new \AvroStringIO();
+		$writer = new \AvroIODatumWriter($this->headerSchema);
+		$encoder = new \AvroIOBinaryEncoder($io);
+		$io->write(self::MAGIC_BLOCK);
+		$writer->write((array)$header, $encoder);
+		return $io->string();
+	}
+
+}

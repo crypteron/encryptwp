@@ -52,7 +52,7 @@ class EncryptWP_Init{
 
 	private function load_dependencies(){
 		// Libraries
-		require_once $this->plugin_path . 'libs/crypteron-php-labs/avro-header/ciphercore-header.php';
+		require_once $this->plugin_path . 'libs/cipher-core/cipher-core.php';
 		require_once $this->plugin_path . 'libs/trestian-wp-managers/trestian-wp-managers.php';
 
 		// Composer
@@ -61,11 +61,7 @@ class EncryptWP_Init{
 		// Setup classes
 		require_once $this->plugin_path . 'classes/setup/class-encrypt-wp-hooks.php';
 
-		// Managers
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-manager.php';
-
 		// Models
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-constants.php';
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';
 
 		// Hooks

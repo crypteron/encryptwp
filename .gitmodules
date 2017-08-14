@@ -1,6 +1,3 @@
-[submodule "libs/crypteron-php-labs"]
-	path = libs/crypteron-php-labs
-	url = git@bitbucket_crypteron:Crypteron/crypteron-php-labs.git
 [submodule "libs/trestian-wp-managers"]
 	path = libs/trestian-wp-managers
 	url = git@github.com:yaronguez/trestian-wp-managers.git

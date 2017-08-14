@@ -1,27 +1,25 @@
 <?php
-class EncryptWP_Shortcodes {
-	protected $encrypt_manager;
 
-	public function __construct(EncryptWP_Manager $encrypt_manager) {
-		$this->encrypt_manager = $encrypt_manager;
+class EncryptWP_Shortcodes {
+	/**
+	 * @var \CipherCore\v1\Encryptor
+	 */
+	protected $encryptor;
+
+	public function __construct(\CipherCore\v1\Encryptor $encryptor) {
+		$this->encryptor = $encryptor;
 	}
 
 	public function load_hooks(){
-		add_shortcode('EncryptWP_Key', array($this, 'generate_key'));
 		add_shortcode('EncryptWP_Encrypt', array($this, 'encrypt'));
 		add_shortcode('EncryptWP_Decrypt', array($this, 'decrypt'));
 	}
 
-	public function generate_key(){
-		$key = $this->encrypt_manager->generate_key();
-		return $key;
-	}
-
 	public function encrypt($args, $content){
-		return $this->encrypt_manager->encrypt($content);
+		return $this->encryptor->encrypt($content);
 	}
 
 	public function decrypt($args, $content){
-		return $this->encrypt_manager->decrypt($content );
+		return $this->encryptor->decrypt($content );
 	}
 }

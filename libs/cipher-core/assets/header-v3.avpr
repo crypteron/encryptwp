@@ -1,0 +1,51 @@
+{
+  "type": "record",
+  "name": "CipherDbHeaderDTO",
+  "fields": [
+    {
+      "name": "Token",
+      "type": ["null", "bytes"],
+      "default": null
+    },
+    {
+      "name": "SecPartId",
+      "type": "string"
+    },
+    {
+      "name": "SecPartVer",
+      "type": "int"
+    },
+    {
+      "name": "CipherSuite",
+      "type": "int",
+      "default": 2
+    },
+    {
+      "name": "IV",
+      "type": "bytes"
+    },
+    {
+      "name": "AAD",
+      "type": ["null", "bytes"],
+      "default": null
+    },
+    {
+      "name": "CellAttributes",
+      "type": "int"
+    },
+    {
+      "name": "DekCipherSuite",
+      "type": "int"
+    },
+    {
+      "name": "DekIV",
+      "type": ["null", "bytes"],
+      "default": null
+    },
+    {
+      "name": "DekEnc",
+      "type": ["null", "bytes"],
+      "default": null
+    }
+  ]
+}
