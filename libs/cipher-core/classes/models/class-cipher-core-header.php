@@ -68,13 +68,4 @@ class CipherCore_Header {
 	 */
 	public $DekEnc = null;
 
-	static function getSchema() {
-		if (is_null(self::$headerSchema)) {
-			$headerSchemaJson = file_get_contents('header-v3.avpr', true);
-			self::$headerSchema = \AvroSchema::parse($headerSchemaJson);
-		}
-		return self::$headerSchema;
-	}
-
-
 }
