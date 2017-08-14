@@ -22,7 +22,6 @@ class HeaderTest extends \PHPUnit\Framework\TestCase {
     * @dataProvider provider
     */
   public function testDeserialize($expectedHeader, $originalHeader) {
-
     $deserializedHeader = $this->serializer->deserialize($expectedHeader);
     $this->assertEquals(mb_strlen($expectedHeader, '8bit'), $deserializedHeader->bytesRead);
     $this->assertEquals((array)$originalHeader, (array)$deserializedHeader->header);

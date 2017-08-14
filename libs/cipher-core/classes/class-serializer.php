@@ -37,7 +37,8 @@ class Serializer {
 		$decoder = new \AvroIOBinaryDecoder($read);
 		$reader = new \AvroIODatumReader($this->headerSchema);
 		$deserializedHeader = new CipherCore_Header_Container();
-		$deserializedHeader->header    = (object)$reader->read($decoder);
+		$headerDto = $reader->read($decoder);
+		$deserializedHeader->header    = CipherCore_Header::fromAvroObj($headerDto);
 		$deserializedHeader->bytesRead = $read->tell();
 		return $deserializedHeader;
 	}
@@ -53,7 +54,7 @@ class Serializer {
 		$writer = new \AvroIODatumWriter($this->headerSchema);
 		$encoder = new \AvroIOBinaryEncoder($io);
 		$io->write(self::MAGIC_BLOCK);
-		$writer->write((array)$header, $encoder);
+		$writer->write($header->toAvroObj(), $encoder);
 		return $io->string();
 	}
 

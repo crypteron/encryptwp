@@ -8,8 +8,6 @@ namespace CipherCore\v1;
  */
 class CipherCore_Header {
 
-
-
 	/**
 	 * Used for creating prefixes for searchable encryption
 	 * @var string | null
@@ -67,5 +65,17 @@ class CipherCore_Header {
 	 * @var null
 	 */
 	public $DekEnc = null;
+
+	public function toAvroObj() {
+		return (array)$this;
+	}
+
+	public static function fromAvroObj($headerDto) {
+		$header = new CipherCore_Header();
+		foreach($headerDto as $key => $value) {
+			$header->$key = $value;
+		}
+		return $header;
+	}
 
 }
