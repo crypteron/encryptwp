@@ -22,18 +22,14 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-// Load Trestian WP Managers
-require_once  plugin_dir_path( __FILE__ ) . 'libs/trestian-wp-managers/trestian-wp-managers.php';
-
-
 function run_encrypt_wp(){
 	/**
 	 * The core plugin class
 	 */
-	require plugin_dir_path( __FILE__ ) . 'classes/setup/class-encrypt-wp-init.php';
+	require 'classes/setup/class-encrypt-wp-init.php';
 	$plugin = new EncryptWP_Init(__FILE__);
 	$plugin->run();
 }
 
 // Run after the latest version of Trestian WP Managers has been loaded
-add_action('trestian_wp_managers_loaded', 'run_encrypt_wp');
+add_action('plugins_loaded', 'run_encrypt_wp');

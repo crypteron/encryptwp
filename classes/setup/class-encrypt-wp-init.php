@@ -1,4 +1,6 @@
 <?php
+use TrestianCore\v1\TrestianCore;
+
 class EncryptWP_Init{
 
 	/**
@@ -53,10 +55,11 @@ class EncryptWP_Init{
 	private function load_dependencies(){
 		// Libraries
 		require_once $this->plugin_path . 'libs/cipher-core/cipher-core.php';
-		require_once $this->plugin_path . 'libs/trestian-wp-managers/trestian-wp-managers.php';
 
-		// Composer
-		require_once $this->plugin_path . 'vendor/autoload.php';
+		// Load V1 of Trestian Core if not already loaded
+		if(!class_exists('\TrestianCore\v1\TrestianCore')){
+			require_once $this->plugin_path  . 'libs/trestian-core/trestian-core.php';
+		}
 
 		// Setup classes
 		require_once $this->plugin_path . 'classes/setup/class-encrypt-wp-hooks.php';
@@ -72,7 +75,7 @@ class EncryptWP_Init{
 	}
 
 	private function setup_dependency_injection(){
-		$this->dice = twpm_setup_dice($this->plugin_name, $this->version, $this->plugin_url, $this->plugin_path, $this->prefix);
+		$this->dice = TrestianCore::setup($this->plugin_name, $this->version, $this->plugin_url, $this->plugin_path, $this->prefix);
 
 		// Set all objects to be created as shared instance
 		$this->dice->addRule('*', ['shared'=>true]);

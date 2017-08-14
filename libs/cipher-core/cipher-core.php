@@ -1,6 +1,10 @@
 <?php
 namespace CipherCore\v1;
 
+if(class_exists('CipherCore', false)){
+	return;
+}
+
 // Libraries
 // Avro
 if(!class_exists('Avro', false)){
@@ -8,6 +12,9 @@ if(!class_exists('Avro', false)){
 }
 
 // To do: create auto loader
+
+// Composer
+require_once 'vendor/autoload.php';
 
 // Interfaces
 require_once 'interfaces/interface-key-server-client.php';
@@ -25,3 +32,7 @@ require_once 'classes/models/class-cipher-core-header-container.php';
 require_once 'classes/models/class-cipher-suite.php';
 require_once 'classes/models/class-constants.php';
 
+// Container class.
+class CipherCore{
+	const VERSION = '1.0.0';
+}
