@@ -26,12 +26,15 @@ require_once 'classes/class-serializer.php';
 
 // Models
 require_once 'classes/models/class-cell-attribute.php';
-require_once 'classes/models/class-cipher-core-exception.php';
 require_once 'classes/models/class-cipher-core-header.php';
 require_once 'classes/models/class-cipher-core-header-container.php';
 require_once 'classes/models/class-cipher-suite.php';
 require_once 'classes/models/class-constants.php';
 require_once 'classes/models/class-dek-info.php';
+
+// Exceptions
+require_once 'classes/exceptions/class-cipher-core-exception.php';
+require_once 'classes/exceptions/class-cipher-core-deserialize-exception.php';
 
 // Container class.
 class CipherCore{

@@ -54,22 +54,6 @@ class CipherCore_Header {
 	 * Optional
 	 * @var DekInfo
 	 */
-  public $DekInfo = null;
-
-	public function toAvroObj() {
-		$headerDto = (array)$this;
-		if($headerDto['DekInfo']) {
-			$headerDto['DekInfo'] = (array)$headerDto['DekInfo'];
-		}
-		return $headerDto;
-	}
-
-	public static function fromAvroObj($headerDto) {
-		$header = new CipherCore_Header();
-		foreach($headerDto as $key => $value) {
-			$header->$key = $value;
-		}
-		return $header;
-	}
+    public $DekInfo = null;
 
 }

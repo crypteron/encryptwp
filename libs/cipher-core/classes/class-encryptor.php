@@ -84,4 +84,28 @@ class Encryptor {
 		return $clear_text;
 	}
 
+	/**
+	 * Determines if encrypted or not. If it is, it returns the decrypted text. If not, it returns false.
+	 * @param $text
+	 *
+	 * @return bool|string
+	 * @throws \Exception
+	 */
+	public function try_decrypt($text){
+		try{
+			$clear_text = $this->decrypt($text);
+
+		} catch(\AvroException $e){
+			return false;
+		} catch(CipherCore_Deserialize_Exception $e){
+			return false;
+		} catch(\Exception $e){
+			// TODO log this
+			throw $e;
+		}
+
+		return $clear_text;
+
+	}
+
 }
