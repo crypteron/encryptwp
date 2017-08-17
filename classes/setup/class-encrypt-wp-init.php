@@ -70,6 +70,7 @@ class EncryptWP_Init{
 		// Hooks
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-shortcodes.php';
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-meta.php';
+		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-fields.php';
 
 
 

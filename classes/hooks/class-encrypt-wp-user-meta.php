@@ -8,7 +8,7 @@ class EncryptWP_UserMeta{
 	protected $encryptor;
 
 	// TODO: store these fields in database or config file
-	protected $secure_fields = array(
+	protected $secure_meta_keys = array(
 		'billing_phone',
 		'phone_number',
 		'pmpro_bphone',
@@ -22,7 +22,9 @@ class EncryptWP_UserMeta{
 		'shipping_address_1',
 		'shipping_address_2',
 		'shipping_first_name',
-		'shipping_last_name'
+		'shipping_last_name',
+		'nickname',
+		'birthday'
 
 	);
 
@@ -34,8 +36,8 @@ class EncryptWP_UserMeta{
 	}
 
 	public function load_hooks(){
-		add_filter('update_user_metadata', array($this, 'save_metadata' ), 10, 5);
-		add_filter('get_user_metadata', array($this, 'get_metadata'), 10, 4);
+		add_filter('update_user_metadata', array($this, 'save_metadata' ), 100, 5);
+		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 	}
 
 	/**
@@ -51,7 +53,7 @@ class EncryptWP_UserMeta{
 	 */
 	public function save_metadata($null, $user_id, $meta_key, $meta_value, $prev_value){
 		// Disregard non-secure fields
-		if(!in_array($meta_key, $this->secure_fields)){
+		if(!in_array($meta_key, $this->secure_meta_keys)){
 			return $null;
 		}
 
@@ -65,13 +67,13 @@ class EncryptWP_UserMeta{
 		$encrypted_value = $this->encryptor->encrypt($meta_value);
 
 		// Remove this save meta filter so we can avoid an infinite loop
-		remove_filter('update_user_metadata', array($this, 'save_metadata' ));
+		remove_filter('update_user_metadata', array($this, 'save_metadata' ), 100);
 
 		// Save the encrypted record
 		update_user_meta($user_id, $meta_key, $encrypted_value);
 
 		// Re-add the save meta filter for future requests
-		add_filter('update_user_metadata', array($this, 'save_metadata' ), 10, 5);
+		add_filter('update_user_metadata', array($this, 'save_metadata' ), 100, 5);
 
 		// Return true to prevent the original meta from being saved while indicating to user that update was successful
 		return true;
@@ -80,18 +82,18 @@ class EncryptWP_UserMeta{
 
 	public function get_metadata($null, $user_id, $meta_key, $single){
 		// Disregard non-secure fields
-		if(!in_array($meta_key, $this->secure_fields)){
+		if(!in_array($meta_key, $this->secure_meta_keys)){
 			return $null;
 		}
 
 		// Turn off filter to fetch meta data through normal channels
-		remove_filter('get_user_metadata', array($this,'get_metadata'));
+		remove_filter('get_user_metadata', array($this,'get_metadata'), 1);
 
-		// Fetch meta data normally
+		// Fetch meta dnormally
 		$value = get_user_meta($user_id, $meta_key, $single);
 
-		// Re-Add the filter for future requests
-		add_filter('get_user_metadata', array($this, 'get_metadata'), 10, 4);
+		// Re-Add the filter for future requestsata
+		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 
 		if(self::STRICT){
 			// Strict mode is on. Return the decrypted value, triggering an error if it is not already encrypted
