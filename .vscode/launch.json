@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug PHPUnit Tests",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceRoot}/libs/cipher-core/vendor/bin/phpunit",
+      "cwd": "${workspaceRoot}/libs/cipher-core"
+    }
+  ]
+}
