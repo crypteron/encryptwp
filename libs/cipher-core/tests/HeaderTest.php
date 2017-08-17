@@ -32,7 +32,9 @@ class HeaderTest extends \PHPUnit\Framework\TestCase {
   public function testDeserialize($expectedHeader, $originalHeader) {
     $deserializedHeader = $this->serializer->deserialize($expectedHeader);
     $this->assertEquals(mb_strlen($expectedHeader, '8bit'), $deserializedHeader->bytesRead);
-    $this->assertEquals($originalHeader->toAvroObj(), $deserializedHeader->header->toAvroObj());
+    $expectedDto = $this->serializer->header_to_avro_object($originalHeader);
+    $actualDto = $this->serializer->header_to_avro_object($deserializedHeader->header);
+    $this->assertEquals($expectedDto, $actualDto);
   }
 
   public function provider() {
