@@ -6,7 +6,8 @@
       "type": "php",
       "request": "launch",
       "program": "${workspaceRoot}/libs/cipher-core/vendor/bin/phpunit",
-      "cwd": "${workspaceRoot}/libs/cipher-core"
+      "cwd": "${workspaceRoot}/libs/cipher-core",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }
