@@ -12,12 +12,14 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $convertTestVector = function($testVector) {
       $expectedCiphertext = $testVector['ciphertext'];
       $encryptParameters = new EncryptParameters();
-      $encryptParameters->plaintext = $testVector['plaintext'];
+      $encryptParameters->plaintext = hex2bin($testVector['plaintext']);
       $encryptParameters->key = hex2bin($testVector['key']);
       $encryptParameters->iv = hex2bin($testVector['iv']);
       $encryptParameters->aad = hex2bin($testVector['aad']);
-      $encryptParameters->searchable = $testVector['searchable'];
-      $encryptParameters->tokenKey = hex2bin($testVector['tokenKey']);
+      if(array_key_exists('searchable', $testVector)) {
+        $encryptParameters->searchable = $testVector['searchable'];
+        $encryptParameters->tokenKey = hex2bin($testVector['tokenKey']);
+      }
       return array('expectedCiphertext' => $expectedCiphertext, 'encryptParameters' => $encryptParameters);
     };
 
