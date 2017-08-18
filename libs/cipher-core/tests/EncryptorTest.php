@@ -3,37 +3,45 @@ namespace CipherCore\v1;
 require_once 'cipher-core.php';
 
 class EncryptorTest extends \PHPUnit\Framework\TestCase {
-  private $plaintext;
-  private $key;
-  private $iv;
-  private $aad;
-  private $ciphertext;
   private $encryptor;
+
+  public function provider() {
+    $testVectorsJson = file_get_contents(__DIR__  . "/test-encryptor-data.json");
+    $testVectors = json_decode($testVectorsJson, true);
+
+    $convertTestVector = function($testVector) {
+      $expectedCiphertext = $testVector['ciphertext'];
+      $encryptParameters = new EncryptParameters();
+      $encryptParameters->plaintext = $testVector['plaintext'];
+      $encryptParameters->key = hex2bin($testVector['key']);
+      $encryptParameters->iv = hex2bin($testVector['iv']);
+      $encryptParameters->aad = hex2bin($testVector['aad']);
+      return array('expectedCiphertext' => $expectedCiphertext, 'encryptParameters' => $encryptParameters);
+    };
+
+    return array_map($convertTestVector, $testVectors);
+  }
   
   function setUp() {
-    $this->plaintext = '6015-6956-8952-4805';
-    $this->key = base64_decode('/v/pkoZlcxxtao+UZzCDCP7/6ZKGZXMcbWqPlGcwgwg=');
-    $this->iv = base64_decode('F+H5RP3jw9CiEWuL');
-    $this->aad = base64_decode('d5BcHFfsYJ4MTR8fXX+Ilg==');
-    $this->ciphertext = 'zbMAAAIAGBfh+UT948PQohFriwIgd5BcHFfsYJ4MTR8fXX+IlgAAyMKitXfSPcxzQHL9xCYazC50p9qW0BkIjL556teZiaw9I7w=';
     $this->encryptor = new Encryptor();
   }
 
-  public function testEncrypt() {
-    $encryptParameters = new EncryptParameters();
-    $encryptParameters->plaintext = $this->plaintext;
-    $encryptParameters->key = $this->key;
-    $encryptParameters->iv = $this->iv;
-    $encryptParameters->aad = $this->aad;
+    /**
+    * @dataProvider provider
+    */
+  public function testEncrypt($expectedCiphertext, $encryptParameters) {
     $actualEncrypted = $this->encryptor->encryptWithParameters($encryptParameters, true);
-    $this->assertEquals($this->ciphertext, $actualEncrypted);
+    $this->assertEquals($expectedCiphertext, $actualEncrypted);
   }
 
-  public function testDecrypt() {
+    /**
+    * @dataProvider provider
+    */
+  public function testDecrypt($expectedCiphertext, $encryptParameters) {
     $decryptParameters = new DecryptParameters();
-    $decryptParameters->ciphertext = $this->ciphertext;
-    $decryptParameters->key = $this->key;
+    $decryptParameters->ciphertext = $expectedCiphertext;
+    $decryptParameters->key = $encryptParameters->key;
     $actualDecrypted = $this->encryptor->decryptWithParameters($decryptParameters, true);
-    $this->assertEquals($this->plaintext, $actualDecrypted);
+    $this->assertEquals($encryptParameters->plaintext, $actualDecrypted);
   }
 }

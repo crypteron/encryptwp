@@ -1,7 +1,7 @@
 <?php
 namespace CipherCore\v1;
 
-class Constants{
+class Constants {
 	const BITS_PER_BYTE = 8;
 	const AES_256_KEY_SIZE_BITS = 256;
 	const AES_256_KEY_SIZE_BYTES = self::AES_256_KEY_SIZE_BITS / self::BITS_PER_BYTE;

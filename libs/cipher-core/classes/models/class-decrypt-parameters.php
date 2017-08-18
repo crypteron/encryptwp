@@ -7,9 +7,9 @@ namespace CipherCore\v1;
  */
 class DecryptParameters {
   /**
-   * @var string | null
+   * @var string
    */
-    public $ciphertext = null;
+    public $ciphertext;
 
   /**
    * @var string | null

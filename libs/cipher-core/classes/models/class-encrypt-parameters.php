@@ -9,20 +9,20 @@ class EncryptParameters {
   /**
    * @var string | null
    */
-    public $plaintext = null;
+    public $plaintext = NULL;
 
   /**
-   * @var string | null
+   * @var string
    */
     public $key;
    
    /**
-   * @var string | null
+   * @var string
    */
     public $iv;
    
    /**
    * @var string | null
    */
-    public $aad;
+    public $aad = NULL;
 }
