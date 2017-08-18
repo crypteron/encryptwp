@@ -20,16 +20,20 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
   }
 
   public function testEncrypt() {
-    $actualEncrypted = $this->encryptor->encryptWithParameters(
-      $this->plaintext, $this->key, $this->iv, $this->aad, true
-    );
+    $encryptParameters = new EncryptParameters();
+    $encryptParameters->plaintext = $this->plaintext;
+    $encryptParameters->key = $this->key;
+    $encryptParameters->iv = $this->iv;
+    $encryptParameters->aad = $this->aad;
+    $actualEncrypted = $this->encryptor->encryptWithParameters($encryptParameters, true);
     $this->assertEquals($this->ciphertext, $actualEncrypted);
   }
 
   public function testDecrypt() {
-    $actualDecrypted = $this->encryptor->decryptWithParameters(
-      $this->ciphertext, $this->key, true
-    );
+    $decryptParameters = new DecryptParameters();
+    $decryptParameters->ciphertext = $this->ciphertext;
+    $decryptParameters->key = $this->key;
+    $actualDecrypted = $this->encryptor->decryptWithParameters($decryptParameters, true);
     $this->assertEquals($this->plaintext, $actualDecrypted);
   }
 }

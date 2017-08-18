@@ -30,7 +30,9 @@ require_once 'classes/models/class-cipher-core-header.php';
 require_once 'classes/models/class-cipher-core-header-container.php';
 require_once 'classes/models/class-cipher-suite.php';
 require_once 'classes/models/class-constants.php';
+require_once 'classes/models/class-decrypt-parameters.php';
 require_once 'classes/models/class-dek-info.php';
+require_once 'classes/models/class-encrypt-parameters.php';
 
 // Exceptions
 require_once 'classes/exceptions/class-cipher-core-exception.php';
