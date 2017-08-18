@@ -4,11 +4,6 @@ namespace CipherCore\v1;
 class Serializer {
 
 	/**
-	 * @const string
-	 */
-	const MAGIC_BLOCK = "\xCD\xB3";
-
-	/**
 	 * @var \AvroSchema
 	 */
 	private $headerSchema;
@@ -32,9 +27,9 @@ class Serializer {
 	 */
 	public function deserialize($serialized_header) {
 		$read = new \AvroStringIO($serialized_header);
-		$magicBlockLength = mb_strlen(self::MAGIC_BLOCK, '8bit');
+		$magicBlockLength = mb_strlen(Constants::MAGIC_BLOCK, '8bit');
 		$actualMagicBlock = $read->read($magicBlockLength);
-		if($actualMagicBlock !== self::MAGIC_BLOCK){
+		if($actualMagicBlock !== Constants::MAGIC_BLOCK){
 			throw new CipherCore_Deserialize_Exception("Header magic block doesn't match");
 		}
 
@@ -57,7 +52,7 @@ class Serializer {
 		$io = new \AvroStringIO();
 		$writer = new \AvroIODatumWriter($this->headerSchema);
 		$encoder = new \AvroIOBinaryEncoder($io);
-		$io->write(self::MAGIC_BLOCK);
+		$io->write(Constants::MAGIC_BLOCK);
 		$headerDto = $this->header_to_avro_object($header);
 		$writer->write($headerDto, $encoder);
 		return $io->string();

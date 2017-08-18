@@ -3,6 +3,9 @@ namespace CipherCore\v1;
 use AESGCM\AESGCM;
 
 class Encryptor {
+	// Search tokens will only universally work when there is no padding in the Base64 encoded version.
+  // Since Base64 is encoded in groups of 6 bits and bytes are 8 bits, they overlap every 24 bits or 3 bytes.
+	const PREFIX_DIVISIBLE_BY = 3;
 
 	/**
 	 * @var IKeyServerClient
@@ -19,17 +22,39 @@ class Encryptor {
 		$this->serializer = new Serializer();
 	}
 
-	public function generate_iv() {
-		return random_bytes(Constants::IV_SIZE_BYTES);
+	/**
+	 * Generates a search token for the given encryption parameters.
+	 *
+	 * @param EncryptParameters $parameters - parameters to tokenize
+	 *
+	 * @return string - binary token value
+	 */
+	public function tokenForParameters($parameters) {
+		return hash_hmac(Constants::HASH_ALGORITHM, $parameters->plaintext, $parameters->tokenKey, true);
+	}
+
+	public function searchPrefixForParameters($parameters, $base64) {
+		$magicBlockLength = mb_strlen(Constants::MAGIC_BLOCK, '8bit');
+		$searchPrefixSize = $magicBlockLength + Constants::TOKEN_SIZE_BYTES;
+		$searchPrefixSize -= $searchPrefixSize % self::PREFIX_DIVISIBLE_BY;
+		$header = new CipherCore_Header();
+		$header->IV = $parameters->iv;
+		$header->Token = $this->tokenForParameters($parameters);
+		$headerBytes = $this->serializer->serialize($header);
+		$searchPrefix = substr($headerBytes, 0, $searchPrefixSize);
+		if($base64) {
+			$searchPrefix = base64_encode($searchPrefix);
+		}
+		return $searchPrefix;
 	}
 
 	/**
 	 * Encrypts parameters with AES-GCM
 	 *
 	 * @param EncryptParameters $parameters - parameters to encrypt
-	 * @param bool $base64 - base64 encode result
+	 * @param bool $base64 - Base64 encode result
 	 *
-	 * @return string - Encrypted data including header and tag
+	 * @return string - Encrypted binary/Base64 data including header and tag
 	 */
 	public function encryptWithParameters($parameters, $base64) {
 		$ciphertext_with_tag = AESGCM::encryptAndAppendTag($parameters->key, $parameters->iv, $parameters->plaintext, $parameters->aad, Constants::TAG_SIZE_BITS);
@@ -37,6 +62,9 @@ class Encryptor {
 		$header = new CipherCore_Header();
 		$header->IV = $parameters->iv;
 		$header->AAD = $parameters->aad;
+		if($parameters->searchable) {
+			$header->Token = $this->tokenForParameters($parameters);
+		}
 		$serialized_header = $this->serializer->serialize($header);
 
 		$encrypted_record =  $serialized_header . $ciphertext_with_tag;
@@ -52,14 +80,13 @@ class Encryptor {
 	 * @param string|null $clear_text - Text to encrypt
 	 * @param string|null $aad - Additional Authenticated Data
 	 *
-	 * @return string - Encrypted binary data including header and tag
+	 * @return string - Encrypted binary/Base64 data including header and tag
 	 */
 	public function encrypt($clear_text = null, $aad = null, $base64 = true) {
 		$encryptParameters = new EncryptParameters();
 		$encryptParameters->plaintext = $clear_text;
 		// TODO - assemble key request object
 		$encryptParameters->key = $this->key_server_client->read_sec_part_key(null);
-		$encryptParameters->iv = $this->generate_iv();
 
 		$encrypted_record = $this->encryptWithParameters($encryptParameters, $base64);
 		return $encrypted_record;
@@ -69,7 +96,7 @@ class Encryptor {
 	 * Decrypts parameters with AES-GCM
 	 *
 	 * @param DecryptParameters $parameters - parameters to decrypt
-	 * @param bool $base64 - base64 encode result
+	 * @param bool $base64 - Base64 decode ciphertext
 	 *
 	 * @return string - Decrypted plaintext
 	 */
@@ -89,8 +116,8 @@ class Encryptor {
 	/**
 	 * Decrypts binary text and authenticates additional data
 	 *
-	 * @param string $encrypted_record - Encrypted record. Binary.
-	 * @param string | null $aad - Additional authenticated data
+	 * @param string $encrypted_record - Encrypted record. Binary or Base64 encoded.
+	 * @param bool $base64 - Base64 decode ciphertext
 	 *
 	 * @return string - Decrypted plaintext
 	 */

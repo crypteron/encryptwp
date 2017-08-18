@@ -25,4 +25,18 @@ class EncryptParameters {
    * @var string | null
    */
     public $aad = NULL;
+
+    /**
+   * @var bool
+   */
+    public $searchable = false;
+
+    /**
+   * @var string | null
+   */
+   public $tokenKey = NULL;
+
+   public function __construct() {
+     $this->iv = random_bytes(Constants::IV_SIZE_BYTES);
+  }
 }

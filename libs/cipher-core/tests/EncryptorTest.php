@@ -16,6 +16,8 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
       $encryptParameters->key = hex2bin($testVector['key']);
       $encryptParameters->iv = hex2bin($testVector['iv']);
       $encryptParameters->aad = hex2bin($testVector['aad']);
+      $encryptParameters->searchable = $testVector['searchable'];
+      $encryptParameters->tokenKey = hex2bin($testVector['tokenKey']);
       return array('expectedCiphertext' => $expectedCiphertext, 'encryptParameters' => $encryptParameters);
     };
 
@@ -32,6 +34,10 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
   public function testEncrypt($expectedCiphertext, $encryptParameters) {
     $actualEncrypted = $this->encryptor->encryptWithParameters($encryptParameters, true);
     $this->assertEquals($expectedCiphertext, $actualEncrypted);
+    if($encryptParameters->searchable) {
+      $searchPrefix = $this->encryptor->searchPrefixForParameters($encryptParameters, true);
+      $this->assertStringStartsWith($searchPrefix, $actualEncrypted);
+    }
   }
 
     /**

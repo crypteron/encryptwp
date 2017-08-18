@@ -15,4 +15,9 @@ class Constants {
 	const TAG_SIZE_BITS = 128;
 	const TAG_SIZE_BYTES = self::TAG_SIZE_BITS / self::BITS_PER_BYTE;
 
+	const TOKEN_SIZE_BITS = 256;
+	const TOKEN_SIZE_BYTES = self::TOKEN_SIZE_BITS / self::BITS_PER_BYTE;
+
+	const MAGIC_BLOCK = "\xCD\xB3";
+	const HASH_ALGORITHM = "sha256";
 }
