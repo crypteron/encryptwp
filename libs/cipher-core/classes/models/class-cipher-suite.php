@@ -41,5 +41,3 @@ class CipherSuite {
 	 */
 	const TOKENHMACSHA256 = 30;
 }
-
-?>

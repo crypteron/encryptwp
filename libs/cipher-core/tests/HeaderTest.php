@@ -65,4 +65,3 @@ class HeaderTest extends \PHPUnit\Framework\TestCase {
     return array_map($convertTestHeader, $testHeaders);
   }
 }
-?>

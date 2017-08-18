@@ -33,4 +33,3 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $this->assertEquals($this->plaintext, $actualDecrypted);
   }
 }
-?>
