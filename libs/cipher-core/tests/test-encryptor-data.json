@@ -65,146 +65,146 @@
   },
   {
     "testCase":1,
-    "key":"00000000000000000000000000000000",
     "plaintext":"",
-    "aad":"",
+    "key":"00000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAABY4vzO+n4wYTZ/HVek50Va"
   },
   {
     "testCase":2,
-    "key":"00000000000000000000000000000000",
     "plaintext":"00000000000000000000000000000000",
-    "aad":"",
+    "key":"00000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAAADiNrOYLajkvMowrlxsv54q25H1CzsE731OmeyEle93w=="
   },
   {
     "testCase":3,
-    "key":"feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255",
-    "aad":"",
+    "key":"feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIAAABCgx7CIXd0JEtyIbeE0NSc46ohLywCpOA1wX4jKayhLiHVFLJUZpMcfY9qWqyEqgUbows5agqslz1Y4JFHP1mFTVwq8yfNZKYs81q9K6b6tA=="
   },
   {
     "testCase":4,
-    "key":"feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIo/u36zt6tvu/+7frO3q2+76ut2tIAAEKDHsIhd3QkS3Iht4TQ1JzjqiEvLAKk4DXBfiMprKEuIdUUslRmkxx9j2parISqBRujCzlqCqyXPVjgkVvJT7wyIaXblPrpWucSGkc="
   },
   {
     "testCase":5,
-    "key":"feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbad",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAEMr+ur76ztutAij+7frO3q2+7/7t+s7erb7vq63a0gAAYTU7TCgGk0p3f/UfoipHVWmbKnFPzcb4N2bl+XtsdCNzgGkA5J8ksisJdUTUiWtCSYm14eusDwfCP0WYNhLS5547B4VWG+FKrKL8yw=="
   },
   {
     "testCase":6,
-    "key":"feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308",
     "iv":"9313225df88406e555909c5aff5269aa6a7a9538534f7da1e4c303d2a318a728c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAeJMTIl34hAblVZCcWv9SaapqepU4U099oeTDA9KjGKcow8DJUVaAlTn88OJCmmtSVBau2/Wg3mpXpjezmwIo/u36zt6tvu/+7frO3q2+76ut2tIAAIziSZhiVhW2A6AzrKE/uJS+kRKlw6IRqLomKjzKfiynAeSppPukPJDM3LKB1Ix8b9YoddKspBcDTDSu5WGcxa7//gv6Rir0PBaZ0FA="
   },
   {
     "testCase":7,
-    "key":"000000000000000000000000000000000000000000000000",
     "plaintext":"",
-    "aad":"",
+    "key":"000000000000000000000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAADNM7KKx3P3S6AO0fMSVyQ1"
   },
   {
     "testCase":8,
-    "key":"000000000000000000000000000000000000000000000000",
     "plaintext":"00000000000000000000000000000000",
-    "aad":"",
+    "key":"000000000000000000000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAACY5yR8B/D+QRwmfkOEsPYAL/WNgAM5J6uO9NRYdRTw+w=="
   },
   {
     "testCase":9,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255",
-    "aad":"",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIAAAA5gMoLPADoQesG+sSHKidXhZ4c6qbv2YRihZO0DKHhnH13PQDBRMUlrGGdGMhKP0cY4kSLL+Mk2czaJxCsreJWmSSnyFhzNr+xGAJNuGdKFA=="
   },
   {
     "testCase":10,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIo/u36zt6tvu/+7frO3q2+76ut2tIAADmAygs8AOhB6wb6xIcqJ1eFnhzqpu/ZhGKFk7QMoeGcfXc9AMFExSWsYZ0YyEo/RxjiRIsv4yTZzNonECUZSY6A8UePN7pVvW0nYYw="
   },
   {
     "testCase":11,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "iv":"cafebabefacedbad",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAEMr+ur76ztutAij+7frO3q2+7/7t+s7erb7vq63a0gAADxD1ma4UoVTtJLNuJTJNuMVmYy7yu7NPg0coD8RQcFf93CnfmkcfdcZlQdTU2tHJ6ToZpY6LRz+g8GL3ZdzFf89iOiQJT8ykDTUz+A=="
   },
   {
     "testCase":12,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c",
     "iv":"9313225df88406e555909c5aff5269aa6a7a9538534f7da1e4c303d2a318a728c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAeJMTIl34hAblVZCcWv9SaapqepU4U099oeTDA9KjGKcow8DJUVaAlTn88OJCmmtSVBau2/Wg3mpXpjezmwIo/u36zt6tvu/+7frO3q2+76ut2tIAANJ+iGgc4yQ8SDAWWo/c+f8d6aHY5rRH7273t5goZm5FgeeQEq803dni8DdYmykts+Z8A2dF+iLn6bc3O9z1Zv8pHCW7uFaPw9N2ptk="
   },
   {
     "testCase":13,
-    "key":"0000000000000000000000000000000000000000000000000000000000000000",
     "plaintext":"",
-    "aad":"",
+    "key":"0000000000000000000000000000000000000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAABTD4r7x0U2ualjtPHEy3OL"
   },
   {
     "testCase":14,
-    "key":"0000000000000000000000000000000000000000000000000000000000000000",
     "plaintext":"00000000000000000000000000000000",
-    "aad":"",
+    "key":"0000000000000000000000000000000000000000000000000000000000000000",
     "iv":"000000000000000000000000",
+    "aad":"",
     "ciphertext": "zbMAAAIAGAAAAAAAAAAAAAAAAAIAAADOp0A9TWBrbgdOxdO6850Y0NHIp5mZa/AmW5i11Iq5GQ=="
   },
   {
     "testCase":15,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255",
-    "aad":"",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIAAABSLcHwmVZ9B/R/N6MqhEJ9ZDqM3L/lwMl1mKK9JVXRqoywjkhZDbs9p7CLEFaCiDjF9h5jk7p6CrzJ9mKJgBWtsJTaxdk0cb3sGlAicOPMbA=="
   },
   {
     "testCase":16,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbaddecaf888",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAGMr+ur76ztut3sr4iAIo/u36zt6tvu/+7frO3q2+76ut2tIAAFItwfCZVn0H9H83oyqEQn1kOozcv+XAyXWYor0lVdGqjLCOSFkNuz2nsIsQVoKIOMX2HmOTunoKvMn2Ynb8bs4PThdozd+IU7stVRs="
   },
   {
     "testCase":17,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "iv":"cafebabefacedbad",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAEMr+ur76ztutAij+7frO3q2+7/7t+s7erb7vq63a0gAAw3Yt8cp4fTKuR8E78ZhEy68a4U0Ll2r6xS/315u6neD+tYLTOTSk8JVMwjY7xz94YqxDDmSr5Jn0fJsfOjN9v0anksReRUkT/i6o8g=="
   },
   {
     "testCase":18,
-    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "plaintext":"d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39",
-    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
+    "key":"feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "iv":"9313225df88406e555909c5aff5269aa6a7a9538534f7da1e4c303d2a318a728c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b",
+    "aad":"feedfacedeadbeeffeedfacedeadbeefabaddad2",
     "ciphertext": "zbMAAAIAeJMTIl34hAblVZCcWv9SaapqepU4U099oeTDA9KjGKcow8DJUVaAlTn88OJCmmtSVBau2/Wg3mpXpjezmwIo/u36zt6tvu/+7frO3q2+76ut2tIAAFqN7y8MnlPx9114U2WeKiDusrIqr95kGaBYq09vdGv0D8DDt4DyREUto+vxxdgs3qJBiZcgDvguRK5+P6RKgmbuHI6wyLXUz1rp8Zo="
   }
 ]
