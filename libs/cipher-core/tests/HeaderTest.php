@@ -1,14 +1,7 @@
 <?php
 namespace CipherCore\v1;
 require_once 'cipher-core.php';
-
-function convertHexField($field) {
-  if($field === NULL) {
-    return NULL;
-  } else {
-    return hex2bin($field);
-  }
-}
+require_once 'tests/test-utils.php';
 
 class HeaderTest extends \PHPUnit\Framework\TestCase {
 

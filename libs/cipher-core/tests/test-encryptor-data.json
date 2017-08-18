@@ -1,5 +1,19 @@
 [
   {
+    "plaintext": "",
+    "key": "feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
+    "iv": "17e1f944fde3c3d0a2116b8b",
+    "aad": null,
+    "ciphertext": "zbMAAAIAGBfh+UT948PQohFriwAAAHm6zTTFXI6h3k+aWZVDXhQ="
+  },
+  {
+    "plaintext": "363031352d363935362d383935322d34383035",
+    "key": "feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
+    "iv": "17e1f944fde3c3d0a2116b8b",
+    "aad": null,
+    "ciphertext": "zbMAAAIAGBfh+UT948PQohFriwAAAMjCorV30j3Mc0By/cQmGswudKfYkUHMjmwG1vF3/9YqaFeD"
+  },
+  {
     "plaintext": "363031352d363935362d383935322d34383035",
     "key": "feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308",
     "iv": "17e1f944fde3c3d0a2116b8b",
