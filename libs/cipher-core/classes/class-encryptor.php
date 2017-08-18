@@ -63,6 +63,7 @@ class Encryptor {
 		$header->IV = $parameters->iv;
 		$header->AAD = $parameters->aad;
 		if($parameters->searchable) {
+			$header->CipherSuite = CipherSuite::AESGCM_TOKENHMACSHA256;
 			$header->Token = $this->tokenForParameters($parameters);
 		}
 		$serialized_header = $this->serializer->serialize($header);
