@@ -38,13 +38,22 @@ class Encryptor {
 		$searchPrefixSize = $magicBlockLength + Constants::TOKEN_SIZE_BYTES;
 		$searchPrefixSize -= $searchPrefixSize % self::PREFIX_DIVISIBLE_BY;
 		$header = new CipherCore_Header();
-		$header->IV = $parameters->iv;
+		$header->IV = '';
 		$header->Token = $this->tokenForParameters($parameters);
 		$headerBytes = $this->serializer->serialize($header);
 		$searchPrefix = substr($headerBytes, 0, $searchPrefixSize);
 		if($base64) {
 			$searchPrefix = base64_encode($searchPrefix);
 		}
+		return $searchPrefix;
+	}
+
+	public function searchPrefix($plaintext, $base64 = true) {
+		$parameters = new EncryptParameters();
+		$parameters->plaintext = $plaintext;
+		// TODO - assemble key request object
+		$parameters->tokenKey = $this->key_server_client->read_sec_part_key(null);
+		$searchPrefix = $this->searchPrefixForParameters($parameters, $base64);
 		return $searchPrefix;
 	}
 
@@ -80,14 +89,21 @@ class Encryptor {
 	 *
 	 * @param string|null $clear_text - Text to encrypt
 	 * @param string|null $aad - Additional Authenticated Data
+	 * @param bool $searchable - include token for searchable encryption
+	 * @param bool $base64 - Base64 encode result
 	 *
 	 * @return string - Encrypted binary/Base64 data including header and tag
 	 */
-	public function encrypt($clear_text = null, $aad = null, $base64 = true) {
+	public function encrypt($clear_text = null, $aad = null, $searchable = false, $base64 = true) {
 		$encryptParameters = new EncryptParameters();
 		$encryptParameters->plaintext = $clear_text;
+		$encryptParameters->searchable = $searchable;
 		// TODO - assemble key request object
 		$encryptParameters->key = $this->key_server_client->read_sec_part_key(null);
+		if($searchable) {
+			// TODO - assemble key request object
+			$encryptParameters->tokenKey = $this->key_server_client->read_sec_part_key(null);
+		}
 
 		$encrypted_record = $this->encryptWithParameters($encryptParameters, $base64);
 		return $encrypted_record;

@@ -12,6 +12,10 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
    * @var string
    */
   private $plaintext;
+  /**
+   * @var string
+   */
+   private $aad;
 
   public function provider() {
     $testVectorsJson = file_get_contents(__DIR__  . '/test-encryptor-data.json');
@@ -42,6 +46,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
   function setUp() {
     $this->encryptor = new Encryptor();
     $this->plaintext = "6015-6956-8952-4805";
+    $this->aad = "user_1";
   }
 
     /**
@@ -67,9 +72,35 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $this->assertEquals($encryptParameters->plaintext, $actualDecrypted);
   }
 
-  public function testEncryptDecryptLifecycle() {
+  public function testEncryptDecryptLifecycleWithNoAadNotSearchable() {
     $ciphertext = $this->encryptor->encrypt($this->plaintext);
     $actualDecrypted = $this->encryptor->decrypt($ciphertext);
     $this->assertEquals($this->plaintext, $actualDecrypted);
+    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $this->assertStringStartsNotWith($searchPrefix, $ciphertext);
+  }
+
+  public function testEncryptDecryptLifecycleWithAadNotSearchable() {
+    $ciphertext = $this->encryptor->encrypt($this->plaintext, $this->aad);
+    $actualDecrypted = $this->encryptor->decrypt($ciphertext);
+    $this->assertEquals($this->plaintext, $actualDecrypted);
+    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $this->assertStringStartsNotWith($searchPrefix, $ciphertext);
+  }
+  
+  public function testEncryptDecryptLifecycleWithNoAadSearchable() {
+    $ciphertext = $this->encryptor->encrypt($this->plaintext, NULL, true);
+    $actualDecrypted = $this->encryptor->decrypt($ciphertext);
+    $this->assertEquals($this->plaintext, $actualDecrypted);
+    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $this->assertStringStartsWith($searchPrefix, $ciphertext);
+  }
+
+  public function testEncryptDecryptLifecycleWithAadSearchable() {
+    $ciphertext = $this->encryptor->encrypt($this->plaintext, $this->aad, true);
+    $actualDecrypted = $this->encryptor->decrypt($ciphertext);
+    $this->assertEquals($this->plaintext, $actualDecrypted);
+    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $this->assertStringStartsWith($searchPrefix, $ciphertext);
   }
 }
