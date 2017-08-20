@@ -3,15 +3,17 @@ namespace CipherCore\v1;
 
 class Key_Server_Client implements IKeyServerClient {
 	/**
-	 * @param $key_request
+	 * @param ReadKeyRequest $key_request
 	 *
 	 * @return bool|string
 	 */
-	public function read_sec_part_key( $key_request ) {
-
+	public function read_sec_part_key($key_request) {
+		$keyBytesEncoded = CIPHER_CORE_KEY;
+		if($key_request->SecPartVer === SecPartVer::Tokenization) {
+			$keyBytesEncoded = CIPHER_CORE_TOKEN_KEY;
+		}
 		// TO DO - Implement key server call and response
-		return base64_decode(CIPHER_CORE_KEY);
-
+		return base64_decode($keyBytesEncoded);
 	}
 
 	/**

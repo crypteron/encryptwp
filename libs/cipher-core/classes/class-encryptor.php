@@ -51,8 +51,11 @@ class Encryptor {
 	public function searchPrefix($plaintext, $base64 = true) {
 		$parameters = new EncryptParameters();
 		$parameters->plaintext = $plaintext;
-		// TODO - assemble key request object
-		$parameters->tokenKey = $this->key_server_client->read_sec_part_key(null);
+		$keyRequest = new ReadKeyRequest();
+		$keyRequest->SecPartId = Constants::SYSTEM_RESERVED_ID;
+		$keyRequest->SecPartVer = SecPartVer::Tokenization;
+		$keyRequest->ForRoleId = Constants::SYSTEM_RESERVED_ID;
+		$parameters->tokenKey = $this->key_server_client->read_sec_part_key($keyRequest);
 		$searchPrefix = $this->searchPrefixForParameters($parameters, $base64);
 		return $searchPrefix;
 	}
@@ -98,11 +101,14 @@ class Encryptor {
 		$encryptParameters = new EncryptParameters();
 		$encryptParameters->plaintext = $clear_text;
 		$encryptParameters->searchable = $searchable;
-		// TODO - assemble key request object
-		$encryptParameters->key = $this->key_server_client->read_sec_part_key(null);
+		$keyRequest = new ReadKeyRequest();
+		$encryptParameters->key = $this->key_server_client->read_sec_part_key($keyRequest);
 		if($searchable) {
-			// TODO - assemble key request object
-			$encryptParameters->tokenKey = $this->key_server_client->read_sec_part_key(null);
+			$tokenKeyRequest = new ReadKeyRequest();
+			$tokenKeyRequest->SecPartId = Constants::SYSTEM_RESERVED_ID;
+			$tokenKeyRequest->SecPartVer = SecPartVer::Tokenization;
+			$tokenKeyRequest->ForRoleId = Constants::SYSTEM_RESERVED_ID;
+			$encryptParameters->tokenKey = $this->key_server_client->read_sec_part_key($tokenKeyRequest);
 		}
 
 		$encrypted_record = $this->encryptWithParameters($encryptParameters, $base64);
@@ -141,8 +147,9 @@ class Encryptor {
 	public function decrypt($encrypted_record, $base64 = true) {
 		$decryptParameters = new DecryptParameters();
 		$decryptParameters->ciphertext = $encrypted_record;
-		// TODO - assemble key request object
-		$decryptParameters->key = $this->key_server_client->read_sec_part_key(null);
+		$keyRequest = new ReadKeyRequest();
+		// TODO - assemble rest of key request object
+		$decryptParameters->key = $this->key_server_client->read_sec_part_key($keyRequest);
 
 		$clear_text = $this->decryptWithParameters($decryptParameters, $base64);
 		return $clear_text;

@@ -41,6 +41,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
   public static function setUpBeforeClass() {
     $keyClient = new Key_Server_Client();
     define('CIPHER_CORE_KEY', $keyClient->generate_key());
+    define('CIPHER_CORE_TOKEN_KEY', $keyClient->generate_key());
   }
   
   function setUp() {

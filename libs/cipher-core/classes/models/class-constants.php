@@ -20,4 +20,5 @@ class Constants {
 
 	const MAGIC_BLOCK = "\xCD\xB3";
 	const HASH_ALGORITHM = "sha256";
+	const SYSTEM_RESERVED_ID = "__sys";
 }
