@@ -15,7 +15,7 @@ class Key_Server_Client implements IKeyServerClient {
 	}
 
 	/**
-	 * Generate a 256 or 128 bit encryption key in hexadecimal
+	 * Generate a 256 or 128 bit encryption key in Base64
 	 * @param bool $AES_256
 	 *
 	 * @return string|void

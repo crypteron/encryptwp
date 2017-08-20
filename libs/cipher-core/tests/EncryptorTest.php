@@ -4,10 +4,17 @@ require_once 'cipher-core.php';
 require_once 'tests/test-utils.php';
 
 class EncryptorTest extends \PHPUnit\Framework\TestCase {
+  /**
+   * @var \CipherCore\v1\Encryptor
+   */
   private $encryptor;
+  /**
+   * @var string
+   */
+  private $plaintext;
 
   public function provider() {
-    $testVectorsJson = file_get_contents(__DIR__  . "/test-encryptor-data.json");
+    $testVectorsJson = file_get_contents(__DIR__  . '/test-encryptor-data.json');
     $testVectors = json_decode($testVectorsJson, true);
 
     $convertTestVector = function($testVector) {
@@ -26,15 +33,21 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
 
     return array_map($convertTestVector, $testVectors);
   }
+
+  public static function setUpBeforeClass() {
+    $keyClient = new Key_Server_Client();
+    define('CIPHER_CORE_KEY', $keyClient->generate_key());
+  }
   
   function setUp() {
     $this->encryptor = new Encryptor();
+    $this->plaintext = "6015-6956-8952-4805";
   }
 
     /**
     * @dataProvider provider
     */
-  public function testEncrypt($expectedCiphertext, $encryptParameters) {
+  public function testEncryptWithParameters($expectedCiphertext, $encryptParameters) {
     $actualEncrypted = $this->encryptor->encryptWithParameters($encryptParameters, true);
     $this->assertEquals($expectedCiphertext, $actualEncrypted);
     if($encryptParameters->searchable) {
@@ -46,11 +59,17 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     /**
     * @dataProvider provider
     */
-  public function testDecrypt($expectedCiphertext, $encryptParameters) {
+  public function testDecryptWithParameters($expectedCiphertext, $encryptParameters) {
     $decryptParameters = new DecryptParameters();
     $decryptParameters->ciphertext = $expectedCiphertext;
     $decryptParameters->key = $encryptParameters->key;
     $actualDecrypted = $this->encryptor->decryptWithParameters($decryptParameters, true);
     $this->assertEquals($encryptParameters->plaintext, $actualDecrypted);
+  }
+
+  public function testEncryptDecryptLifecycle() {
+    $ciphertext = $this->encryptor->encrypt($this->plaintext);
+    $actualDecrypted = $this->encryptor->decrypt($ciphertext);
+    $this->assertEquals($this->plaintext, $actualDecrypted);
   }
 }
