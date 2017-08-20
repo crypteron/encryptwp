@@ -2,4 +2,4 @@
 .gitconfig
 .idea/
 .DS_Store
-
+coverage/

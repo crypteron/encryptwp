@@ -5,4 +5,12 @@
       <directory suffix="Test.php">./tests</directory>
     </testsuite>
   </testsuites>
+  <filter>
+    <whitelist>
+      <directory>classes</directory>
+    </whitelist>
+  </filter>
+  <logging>
+    <log type="coverage-html" target="coverage"/>
+  </logging>
 </phpunit>
