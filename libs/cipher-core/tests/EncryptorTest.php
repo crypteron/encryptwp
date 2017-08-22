@@ -57,7 +57,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $actualEncrypted = $this->encryptor->encryptWithParameters($encryptParameters, true);
     $this->assertEquals($expectedCiphertext, $actualEncrypted);
     if($encryptParameters->searchable) {
-      $searchPrefix = $this->encryptor->searchPrefixForParameters($encryptParameters, true);
+      $searchPrefix = $this->encryptor->getSearchPrefixForParameters($encryptParameters, true);
       $this->assertStringStartsWith($searchPrefix, $actualEncrypted);
     }
   }
@@ -77,7 +77,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $ciphertext = $this->encryptor->encrypt($this->plaintext);
     $actualDecrypted = $this->encryptor->decrypt($ciphertext);
     $this->assertEquals($this->plaintext, $actualDecrypted);
-    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $searchPrefix = $this->encryptor->getSearchPrefix($this->plaintext);
     $this->assertStringStartsNotWith($searchPrefix, $ciphertext);
   }
 
@@ -85,7 +85,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $ciphertext = $this->encryptor->encrypt($this->plaintext, $this->aad);
     $actualDecrypted = $this->encryptor->decrypt($ciphertext);
     $this->assertEquals($this->plaintext, $actualDecrypted);
-    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $searchPrefix = $this->encryptor->getSearchPrefix($this->plaintext);
     $this->assertStringStartsNotWith($searchPrefix, $ciphertext);
   }
   
@@ -93,7 +93,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $ciphertext = $this->encryptor->encrypt($this->plaintext, NULL, true);
     $actualDecrypted = $this->encryptor->decrypt($ciphertext);
     $this->assertEquals($this->plaintext, $actualDecrypted);
-    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $searchPrefix = $this->encryptor->getSearchPrefix($this->plaintext);
     $this->assertStringStartsWith($searchPrefix, $ciphertext);
   }
 
@@ -101,7 +101,7 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $ciphertext = $this->encryptor->encrypt($this->plaintext, $this->aad, true);
     $actualDecrypted = $this->encryptor->decrypt($ciphertext);
     $this->assertEquals($this->plaintext, $actualDecrypted);
-    $searchPrefix = $this->encryptor->searchPrefix($this->plaintext);
+    $searchPrefix = $this->encryptor->getSearchPrefix($this->plaintext);
     $this->assertStringStartsWith($searchPrefix, $ciphertext);
   }
 }

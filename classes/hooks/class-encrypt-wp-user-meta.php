@@ -7,24 +7,28 @@ class EncryptWP_UserMeta{
 	 */
 	protected $encryptor;
 
-	// TODO: store these fields in database or config file
-	protected $secure_meta_keys = array(
-		'billing_phone',
-		'phone_number',
-		'pmpro_bphone',
-		'first_name',
-		'last_name',
-		'billing_email',
-		'billing_first_name',
-		'billing_last_name',
-		'billing_address_1',
-		'billing_address_2',
-		'shipping_address_1',
-		'shipping_address_2',
-		'shipping_first_name',
-		'shipping_last_name',
-		'nickname',
-		'birthday'
+	/**
+	 * User meta fields to secure and whether or not they are searchable. TODO: store these fields in database with
+	 * admin page.
+	 * @var array
+	 */
+	public static $secure_meta_keys = array(
+		'billing_phone' => false,
+		'phone_number' => false,
+		'pmpro_bphone' => false,
+		'first_name' => false,
+		'last_name' => true,
+		'billing_email' => true,
+		'billing_first_name' => false,
+		'billing_last_name' => true,
+		'billing_address_1' => false,
+		'billing_address_2' => false,
+		'shipping_address_1' => false,
+		'shipping_address_2' => false,
+		'shipping_first_name' => false,
+		'shipping_last_name' => true,
+		'nickname' => false,
+		'birthday' => true
 
 	);
 
@@ -36,7 +40,7 @@ class EncryptWP_UserMeta{
 	}
 
 	public function load_hooks(){
-		add_filter('update_user_metadata', array($this, 'save_metadata' ), 100, 5);
+		add_filter('update_user_metadata', array($this, 'save_metadata' ), 500, 5);
 		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 	}
 
@@ -53,9 +57,11 @@ class EncryptWP_UserMeta{
 	 */
 	public function save_metadata($null, $user_id, $meta_key, $meta_value, $prev_value){
 		// Disregard non-secure fields
-		if(!in_array($meta_key, $this->secure_meta_keys)){
+		if(!isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
 		}
+
+		$searchable = self::$secure_meta_keys[$meta_key];
 
 		// If value is already encrypted, do nothing
 		if($this->encryptor->try_decrypt($meta_value) !== false){
@@ -64,7 +70,7 @@ class EncryptWP_UserMeta{
 
 		// Encrypt text
 		// TODO: handle exceptions
-		$encrypted_value = $this->encryptor->encrypt($meta_value);
+		$encrypted_value = $this->encryptor->encrypt($meta_value, $searchable);
 
 		// Remove this save meta filter so we can avoid an infinite loop
 		remove_filter('update_user_metadata', array($this, 'save_metadata' ), 100);
@@ -82,7 +88,7 @@ class EncryptWP_UserMeta{
 
 	public function get_metadata($null, $user_id, $meta_key, $single){
 		// Disregard non-secure fields
-		if(!in_array($meta_key, $this->secure_meta_keys)){
+		if(!isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
 		}
 
@@ -113,9 +119,5 @@ class EncryptWP_UserMeta{
 				return $result;
 			}
 		}
-
-
 	}
-
-
 }
