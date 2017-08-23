@@ -4,7 +4,7 @@ use AESGCM\AESGCM;
 
 class Encryptor {
 	// Search tokens will only universally work when there is no padding in the Base64 encoded version.
-  // Since Base64 is encoded in groups of 6 bits and bytes are 8 bits, they overlap every 24 bits or 3 bytes.
+	// Since Base64 is encoded in groups of 6 bits and bytes are 8 bits, they overlap every 24 bits or 3 bytes.
 	const PREFIX_DIVISIBLE_BY = 3;
 
 	/**

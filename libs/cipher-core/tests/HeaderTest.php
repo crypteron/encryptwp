@@ -30,6 +30,14 @@ class HeaderTest extends \PHPUnit\Framework\TestCase {
     $this->assertEquals($expectedDto, $actualDto);
   }
 
+  /**
+    * @expectedException CipherCore\v1\CipherCore_Deserialize_Exception
+    */
+  public function testDeserializeBadHeader() {
+    $badHeader = 'bad';
+    $this->serializer->deserialize($badHeader);
+  }
+
   public function provider() {
     $testHeadersJson = file_get_contents(__DIR__  . "/test-header-data.json");
     $testHeaders = json_decode($testHeadersJson, true);
