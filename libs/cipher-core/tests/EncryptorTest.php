@@ -104,4 +104,32 @@ class EncryptorTest extends \PHPUnit\Framework\TestCase {
     $searchPrefix = $this->encryptor->getSearchPrefix($this->plaintext);
     $this->assertStringStartsWith($searchPrefix, $ciphertext);
   }
+
+  public function testTryDecryptValidCiphertext() {
+    $validCiphertext = $this->encryptor->encrypt($this->plaintext);
+    $tryDecryptResult = $this->encryptor->try_decrypt($validCiphertext);
+    $this->assertEquals($this->plaintext, $tryDecryptResult);
+  }
+
+  public function testTryDecryptInvalidCiphertext() {
+    $invalidCiphertext = 'invalid';
+    $tryDecryptResult = $this->encryptor->try_decrypt($invalidCiphertext);
+    $this->assertFalse($tryDecryptResult);
+  }
+
+  public function testTryDecryptInvalidCiphertextAvro() {
+    $invalidCiphertext = 'zbME';
+    $tryDecryptResult = $this->encryptor->try_decrypt($invalidCiphertext);
+    $this->assertFalse($tryDecryptResult);
+  }
+
+  /**
+    * @expectedException InvalidArgumentException
+    * @expectedExceptionMessage Unable to decrypt or to verify the tag.
+    */
+  public function testTryDecryptWrongCiphertext() {
+    $invalidCiphertext = 'zbMAAAIAGBfh+UT948PQohFriwAAAHm6zTTFXI6h3k+aWZVDXhQ=';
+    $tryDecryptResult = $this->encryptor->try_decrypt($invalidCiphertext);
+    $this->assertFalse($tryDecryptResult);
+  }
 }
