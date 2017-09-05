@@ -117,23 +117,7 @@ class EncryptWP_UserMeta{
 		// Re-Add the filter for future requestsata
 		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 
-		if(EncryptWP_Constants::STRICT_MODE){
-			// Strict mode is on. Return the decrypted value, triggering an error if it is not already encrypted
-			// TODO: handle exceptions
-			return $this->encryptor->decrypt($value);
-
-		} else {
-			// Strict mode is off. Try to decrypt the value.
-			// TODO: handle exceptions
-			$result = $this->encryptor->try_decrypt($value);
-
-			if($result === false){
-				// Text is not encrypted. Just return the original.
-				return $value;
-			} else {
-				// Text was encrypted. Return decrypted result.
-				return $result;
-			}
-		}
+		// TODO: handle exceptions
+		return $this->encryptor->decrypt($value);
 	}
 }

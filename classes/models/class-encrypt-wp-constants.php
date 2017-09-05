@@ -1,4 +1,5 @@
 <?php
+
 class EncryptWP_Constants {
 	/**
 	 * Whether or not insecure values found in the database should trigger an error when fetched.

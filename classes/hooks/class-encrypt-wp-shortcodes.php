@@ -1,12 +1,13 @@
 <?php
+use CipherCore\v1\Encryptor;
 
 class EncryptWP_Shortcodes {
 	/**
-	 * @var \CipherCore\v1\Encryptor
+	 * @var Encryptor
 	 */
 	protected $encryptor;
 
-	public function __construct(\CipherCore\v1\Encryptor $encryptor) {
+	public function __construct(Encryptor $encryptor) {
 		$this->encryptor = $encryptor;
 	}
 

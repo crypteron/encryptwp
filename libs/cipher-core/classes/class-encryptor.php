@@ -17,9 +17,15 @@ class Encryptor {
 	 */
 	protected $serializer;
 
-	public function __construct() {
+	/**
+	 * @var Settings
+	 */
+	protected $settings;
+
+	public function __construct(Settings $settings) {
 		$this->key_server_client = new Key_Server_Client();
 		$this->serializer = new Serializer();
+		$this->settings = $settings;
 	}
 
 	/**
@@ -184,6 +190,24 @@ class Encryptor {
 		return $plaintext;
 	}
 
+	public function decrypt($encrypted_record, $base64 = true){
+		// If using strict mode, just call internal decrypt method
+		if($this->settings->get_strict()){
+			return $this->decrypt_internal($encrypted_record, $base64);
+		} else {
+			// If not using strict mode, see if the text is encrypted
+			$results = $this->try_decrypt($encrypted_record, $base64);
+
+			// If the text was successfully decrypted, return the end result
+			if($results !== false){
+				return $results;
+			}
+
+			// The text is not encrypted. Return the original.
+			return $encrypted_record;
+		}
+	}
+
 	/**
 	 * Decrypts binary text and authenticates additional data
 	 *
@@ -192,7 +216,8 @@ class Encryptor {
 	 *
 	 * @return string - Decrypted plaintext
 	 */
-	public function decrypt($encrypted_record, $base64 = true) {
+	protected function decrypt_internal($encrypted_record, $base64 = true) {
+
 		// Assemble decryption parameters object with cipher text and fetched encryption key
 		$decryptParameters = new DecryptParameters();
 		$decryptParameters->ciphertext = $encrypted_record;
@@ -205,6 +230,8 @@ class Encryptor {
 		return $clear_text;
 	}
 
+
+
 	/**
 	 * Determines if encrypted or not. If it is, it returns the decrypted text. If not, it returns false.
 	 * @param $text
@@ -212,9 +239,9 @@ class Encryptor {
 	 * @return bool|string
 	 * @throws \Exception
 	 */
-	public function try_decrypt($text){
+	public function try_decrypt($text, $base64 = true){
 		try{
-			$clear_text = $this->decrypt($text);
+			$clear_text = $this->decrypt_internal($text, $base64);
 
 		} catch(\AvroException $e){
 			return false;
