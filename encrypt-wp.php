@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @link              http://trestian.com
+ * @link              https://crypteron.com
  * @since             1.0.0
  * @package           encryptwp
  *
@@ -17,7 +17,7 @@
  * Text Domain:       encryptwp
  * Domain Path:       /languages
  * BitBucket Plugin URI: https://bitbucket.org/Crypteron/cipherwp
- * BitBucket Branch: development
+ * BitBucket Branch: master
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
