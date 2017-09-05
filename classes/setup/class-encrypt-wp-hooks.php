@@ -17,6 +17,11 @@ class EncryptWP_Hooks{
 	protected $user_fields;
 
 	/**
+	 * @var EncryptWP_UserEmail
+	 */
+	protected $user_email;
+
+	/**
 	 * EncryptWP_Hooks constructor. Inject hook objects
 	 *
 	 * @param EncryptWP_Shortcodes $shortcodes
@@ -26,11 +31,13 @@ class EncryptWP_Hooks{
 	public function __construct(
 		EncryptWP_Shortcodes $shortcodes,
 		EncryptWP_UserMeta $user_meta,
-		EncryptWP_UserFields $user_fields
+		EncryptWP_UserFields $user_fields,
+		EncryptWP_UserEmail $user_email
 	) {
 		$this->shortcodes = $shortcodes;
 		$this->user_meta = $user_meta;
 		$this->user_fields = $user_fields;
+		$this->user_email = $user_email;
 	}
 
 	/**
@@ -38,8 +45,9 @@ class EncryptWP_Hooks{
 	 */
 	public function load_hooks(){
 		$this->shortcodes->load_hooks();
-		$this->user_meta->load_hooks();
-		$this->user_fields->load_hooks();
+		// $this->user_meta->load_hooks();
+		// $this->user_fields->load_hooks();
+		// $this->user_email->load_hooks();
 	}
 
 }

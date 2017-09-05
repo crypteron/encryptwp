@@ -66,13 +66,13 @@ class EncryptWP_Init{
 
 		// Models
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';
+		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-constants.php';
 
 		// Hooks
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-shortcodes.php';
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-meta.php';
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-fields.php';
-
-
+		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-email.php';
 
 	}
 

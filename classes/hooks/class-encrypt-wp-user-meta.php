@@ -28,30 +28,37 @@ class EncryptWP_UserMeta{
 		'shipping_first_name' => false,
 		'shipping_last_name' => true,
 		'nickname' => false,
-		'birthday' => true
-
+		'birthday' => true,
+		EncryptWP_Constants::EMAIL_META_KEY => true
 	);
 
-	const STRICT = false;
-
-
+	/**
+	 * EncryptWP_UserMeta constructor.
+	 *
+	 * @param Encryptor $encryptor
+	 */
 	public function __construct(Encryptor $encryptor) {
 		$this->encryptor = $encryptor;
 	}
 
+	/**
+	 * Register hooks
+	 */
 	public function load_hooks(){
+		// Intercept calls to update user meta data
 		add_filter('update_user_metadata', array($this, 'save_metadata' ), 500, 5);
+
+		// Intercept calls to get user metadata
 		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 	}
 
 	/**
-	 * Filter calls to save user meta data. If encryption is required, bypasses filter and updates field itself
-	 * and returns true to prevent another update.
-	 * @param $null
-	 * @param $user_id
-	 * @param $meta_key
-	 * @param $meta_value
-	 * @param $prev_value
+	 * Encrypt meta values for sensitive meta keys
+	 * @param null $null - Always null.
+	 * @param int $user_id
+	 * @param string $meta_key
+	 * @param string $meta_value
+	 * @param string $prev_value
 	 *
 	 * @return bool
 	 */
@@ -86,6 +93,15 @@ class EncryptWP_UserMeta{
 
 	}
 
+	/**
+	 * Decrypt meta values for sensitive meta keys
+	 * @param null $null - Always null
+	 * @param int $user_id
+	 * @param string $meta_key
+	 * @param bool $single
+	 *
+	 * @return bool|mixed|string
+	 */
 	public function get_metadata($null, $user_id, $meta_key, $single){
 		// Disregard non-secure fields
 		if(!isset(self::$secure_meta_keys[$meta_key])){
@@ -101,7 +117,7 @@ class EncryptWP_UserMeta{
 		// Re-Add the filter for future requestsata
 		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
 
-		if(self::STRICT){
+		if(EncryptWP_Constants::STRICT_MODE){
 			// Strict mode is on. Return the decrypted value, triggering an error if it is not already encrypted
 			// TODO: handle exceptions
 			return $this->encryptor->decrypt($value);

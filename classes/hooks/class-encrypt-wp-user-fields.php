@@ -12,12 +12,12 @@ class EncryptWP_UserFields {
 	/**
 	 * @var array - User fields to encrypt and whether or not they are searchable. NOTE: user_login and user_nicename are
 	 * stored in DB with only 50 characters and cannot be encrypted. Encourage users not to use personal information
-	 * in usernames or generate a random username during registration. Login with email instead.
+	 * in usernames or generate a random username during registration. Login with email instead. Note, email is treated
+	 * differently due to size of field.
 	 * TODO: store these fields in database with admin page.
 	 */
 	public static $secure_fields = array(
-		'display_name' => false,
-		'email' => true
+		'display_name' => false
 	);
 
 	// TODO: put in site wide settings
@@ -86,7 +86,7 @@ class EncryptWP_UserFields {
 	 * @return string - cleartext
 	 */
 	public function get_field($value, $user_id){
-		if(self::STRICT){
+		if(EncryptWP_Constants::STRICT_MODE){
 			// Strict mode is on. Return the decrypted value, triggering an error if it is not already encrypted
 			// TODO: handle exceptions
 			return $this->encryptor->decrypt($value);
