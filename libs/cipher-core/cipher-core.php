@@ -40,6 +40,7 @@ require_once 'classes/models/class-settings.php';
 // Exceptions
 require_once 'classes/exceptions/class-cipher-core-exception.php';
 require_once 'classes/exceptions/class-cipher-core-deserialize-exception.php';
+require_once 'classes/exceptions/class-cipher-core-aad-exception.php';
 
 // Container class.
 class CipherCore{

@@ -15,4 +15,9 @@ class DecryptParameters {
    * @var string | null
    */
     public $key;
+
+	/**
+	 * @var string
+	 */
+    public $AAD;
 }

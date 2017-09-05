@@ -185,18 +185,23 @@ class Encryptor {
 		$aad = $header_container->header->AAD;
 		$ciphertext = substr($parameters->ciphertext, $header_container->bytesRead);
 
+		// Verify the AAD if passed
+		if( $parameters->AAD != null && $parameters->AAD != $header_container->header->AAD){
+			throw new CipherCore_AAD_Exception("Additional authenticated data (AAD) provided does not match what's in the encrypted record. The data may have been tampered with.");
+		}
+
 		// Decrypt the record
 		$plaintext = AESGCM::decryptWithAppendedTag($parameters->key, $iv, $ciphertext, $aad, Constants::TAG_SIZE_BITS);
 		return $plaintext;
 	}
 
-	public function decrypt($encrypted_record, $base64 = true){
+	public function decrypt($encrypted_record, $aad = null, $base64 = true){
 		// If using strict mode, just call internal decrypt method
 		if($this->settings->get_strict()){
-			return $this->decrypt_internal($encrypted_record, $base64);
+			return $this->decrypt_internal($encrypted_record, $aad, $base64);
 		} else {
 			// If not using strict mode, see if the text is encrypted
-			$results = $this->try_decrypt($encrypted_record, $base64);
+			$results = $this->try_decrypt($encrypted_record, $aad, $base64);
 
 			// If the text was successfully decrypted, return the end result
 			if($results !== false){
@@ -216,11 +221,13 @@ class Encryptor {
 	 *
 	 * @return string - Decrypted plaintext
 	 */
-	protected function decrypt_internal($encrypted_record, $base64 = true) {
+	protected function decrypt_internal($encrypted_record, $aad = null, $base64 = true) {
 
 		// Assemble decryption parameters object with cipher text and fetched encryption key
-		$decryptParameters = new DecryptParameters();
+		$decryptParameters             = new DecryptParameters();
 		$decryptParameters->ciphertext = $encrypted_record;
+		$decryptParameters->AAD        = $aad;
+
 		$keyRequest = new ReadKeyRequest();
 		// TODO - assemble rest of key request object
 		$decryptParameters->key = $this->key_server_client->read_sec_part_key($keyRequest);
@@ -239,9 +246,9 @@ class Encryptor {
 	 * @return bool|string
 	 * @throws \Exception
 	 */
-	public function try_decrypt($text, $base64 = true){
+	public function try_decrypt($text, $aad = null, $base64 = true){
 		try{
-			$clear_text = $this->decrypt_internal($text, $base64);
+			$clear_text = $this->decrypt_internal($text, $aad, $base64);
 
 		} catch(\AvroException $e){
 			return false;
