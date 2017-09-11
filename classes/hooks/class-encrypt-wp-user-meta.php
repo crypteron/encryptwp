@@ -111,7 +111,7 @@ class EncryptWP_UserMeta{
 		// Turn off filter to fetch meta data through normal channels
 		remove_filter('get_user_metadata', array($this,'get_metadata'), 1);
 
-		// Fetch meta dnormally
+		// Fetch meta normally
 		$value = get_user_meta($user_id, $meta_key, $single);
 
 		// Re-Add the filter for future requestsata

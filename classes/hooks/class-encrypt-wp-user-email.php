@@ -20,6 +20,11 @@ class EncryptWP_UserEmail {
 	 * Register hooks
 	 */
 	public function load_hooks(){
+		// Don't load hooks if email encryption is turned off. TODO: move setting to database
+		if(!EncryptWP_Constants::ENCRYPT_EMAIL){
+			return;
+		}
+
 		// Secure email after profile is updated
 		$this->register_profile_update_hook();
 
@@ -64,7 +69,7 @@ class EncryptWP_UserEmail {
 		remove_filter('send_email_change_email', array($this, 'disable_email_change_notification'), 100);
 	}
 
-	public function get_email($value, $user_id){
+	public function decrypt_email($value, $user_id){
 		// See if email is obfuscated or not
 		if($value != sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user_id)){
 			// If email is not obfuscated either return it or trigger error in secure mode.

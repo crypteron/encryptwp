@@ -9,7 +9,7 @@
  * Plugin Name:       EncryptWP
  * Plugin URI:        https://bitbucket.org/Crypteron/cipherwp
  * Description:       Adds military grade encryption and tamper protection to WordPress
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Crypteron
  * Author URI:        https://crypteron.com
  * License:           GPL-3.0+
@@ -63,6 +63,11 @@ class EncryptWP{
 	protected $hooks;
 
 	/**
+	 * @var EncryptWP_EmailPluggable
+	 */
+	protected $email_pluggable;
+
+	/**
 	 * @var \Dice\Dice
 	 */
 	protected $dice;
@@ -75,9 +80,14 @@ class EncryptWP{
 		$this->plugin_url = plugin_dir_url(__FILE__);
 
 		$this->load_dependencies();
-		$this->setup_dependency_injection();
+		$this->dice = $this->setup_dependency_injection();
 
 		$this->hooks = $this->dice->create('EncryptWP_Hooks');
+
+		// Special case handling for pluggables. As of now there's only one for email handling
+		// If more are needed in the future, abstract this into a pluggable parent class
+		$this->email_pluggable = $this->dice->create('EncryptWP_EmailPluggable');
+		$this->email_pluggable->init();
 	}
 
 	/**
@@ -108,6 +118,9 @@ class EncryptWP{
 			require_once $this->plugin_path  . 'libs/trestian-core/trestian-core.php';
 		}
 
+		// Classes
+		require_once $this->plugin_path . 'classes/class-encrypt-wp-email-pluggable.php';
+
 		// Models
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-constants.php';
@@ -125,15 +138,16 @@ class EncryptWP{
 	 * Setup dependency injection rules
 	 */
 	private function setup_dependency_injection(){
-		$this->dice = TrestianCore::setup($this->plugin_name, $this->version, $this->plugin_url, $this->plugin_path, $this->prefix);
+		$dice = TrestianCore::setup($this->plugin_name, $this->version, $this->plugin_url, $this->plugin_path, $this->prefix);
 
 		// Set all objects to be created as shared instance
-		$this->dice->addRule('*', ['shared'=>true]);
+		$dice->addRule('*', ['shared'=>true]);
 
 		// Enable or disable strict mode.
 		// TODO: move this
-		$this->dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[EncryptWP_Constants::STRICT_MODE]]);
+		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[EncryptWP_Constants::STRICT_MODE]]);
 
+		return $dice;
 	}
 
 	public function get_plugin_name(){
@@ -166,8 +180,11 @@ function encrypt_wp(){
 	return EncryptWP::instance();
 }
 
+// Instantiate plugin for sake of pluggables
+encrypt_wp();
+
 function run_encrypt_wp(){
-	// Instantiate the plugin class
+	// Get instance of plugin class
 	$plugin = encrypt_wp();
 
 	// Run the plugin

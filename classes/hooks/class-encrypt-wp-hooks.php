@@ -45,9 +45,10 @@ class EncryptWP_Hooks{
 	 */
 	public function load_hooks(){
 		$this->shortcodes->load_hooks();
-		// $this->user_meta->load_hooks();
-		// $this->user_fields->load_hooks();
-		// $this->user_email->load_hooks();
+		$this->user_meta->load_hooks();
+		$this->user_fields->load_hooks();
+		$this->user_email->load_hooks();
+
 	}
 
 }

@@ -17,7 +17,9 @@ if(!class_exists('\\Dice\\Dice', false)) {
 	require_once 'libs/Dice.php';
 }
 // Kint
-require_once 'libs/kint/Kint.class.php';
+if(WP_DEBUG){
+	require_once 'libs/kint/Kint.class.php';
+}
 
 // Interfaces
 require_once 'interfaces/interface-trestian-page.php';

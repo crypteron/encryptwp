@@ -19,4 +19,11 @@ class EncryptWP_Constants {
 	 */
 	const OBFUSCATE_EMAIL_PATTERN = "secure_%d@hifoo.com";
 
+	/**
+	 * Whether or not to secure the email address.
+	 * TODO: put in database with admin dashboard control
+	 */
+	const ENCRYPT_EMAIL = true;
+
+
 }
