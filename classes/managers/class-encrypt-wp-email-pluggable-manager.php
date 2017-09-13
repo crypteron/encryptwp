@@ -1,6 +1,6 @@
 <?php
 
-class EncryptWP_EmailPluggable {
+class EncryptWP_Email_Pluggable_Manager {
 	/**
 	 * GET request variable to trigger pluggable check
 	 */

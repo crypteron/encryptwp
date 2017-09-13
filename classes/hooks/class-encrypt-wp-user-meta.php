@@ -1,11 +1,16 @@
 <?php
 use \CipherCore\v1\Encryptor;
 
-class EncryptWP_UserMeta{
+class EncryptWP_User_Meta{
 	/**
 	 * @var Encryptor
 	 */
 	protected $encryptor;
+
+	/**
+	 * @var EncryptWP_Meta_Query_Manager
+	 */
+	protected $meta_query_manager;
 
 	/**
 	 * User meta fields to secure and whether or not they are searchable. TODO: store these fields in database with
@@ -37,8 +42,9 @@ class EncryptWP_UserMeta{
 	 *
 	 * @param Encryptor $encryptor
 	 */
-	public function __construct(Encryptor $encryptor) {
+	public function __construct(Encryptor $encryptor, EncryptWP_Meta_Query_Manager $meta_query_manager) {
 		$this->encryptor = $encryptor;
+		$this->meta_query_manager = $meta_query_manager;
 	}
 
 	/**
@@ -46,10 +52,12 @@ class EncryptWP_UserMeta{
 	 */
 	public function load_hooks(){
 		// Intercept calls to update user meta data
-		add_filter('update_user_metadata', array($this, 'save_metadata' ), 500, 5);
+		add_filter('update_user_metadata', array($this, 'encrypt_meta_value' ), 500, 5);
 
 		// Intercept calls to get user metadata
-		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
+		add_filter('get_user_metadata', array($this, 'decrypt_meta_value' ), 1, 4);
+
+		add_action('pre_get_users', array($this, 'transform_meta_query'), 500, 1);
 	}
 
 	/**
@@ -62,7 +70,7 @@ class EncryptWP_UserMeta{
 	 *
 	 * @return bool
 	 */
-	public function save_metadata($null, $user_id, $meta_key, $meta_value, $prev_value){
+	public function encrypt_meta_value($null, $user_id, $meta_key, $meta_value, $prev_value){
 		// Disregard non-secure fields
 		if(!isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
@@ -77,16 +85,16 @@ class EncryptWP_UserMeta{
 
 		// Encrypt text
 		// TODO: handle exceptions
-		$encrypted_value = $this->encryptor->encrypt($meta_value, $searchable);
+		$encrypted_value = $this->encryptor->encrypt($meta_value, null, $searchable);
 
 		// Remove this save meta filter so we can avoid an infinite loop
-		remove_filter('update_user_metadata', array($this, 'save_metadata' ), 100);
+		remove_filter('update_user_metadata', array($this, 'encrypt_meta_value' ), 100);
 
 		// Save the encrypted record
 		update_user_meta($user_id, $meta_key, $encrypted_value);
 
 		// Re-add the save meta filter for future requests
-		add_filter('update_user_metadata', array($this, 'save_metadata' ), 100, 5);
+		add_filter('update_user_metadata', array($this, 'encrypt_meta_value' ), 100, 5);
 
 		// Return true to prevent the original meta from being saved while indicating to user that update was successful
 		return true;
@@ -102,22 +110,30 @@ class EncryptWP_UserMeta{
 	 *
 	 * @return bool|mixed|string
 	 */
-	public function get_metadata($null, $user_id, $meta_key, $single){
+	public function decrypt_meta_value($null, $user_id, $meta_key, $single){
 		// Disregard non-secure fields
 		if(!isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
 		}
 
 		// Turn off filter to fetch meta data through normal channels
-		remove_filter('get_user_metadata', array($this,'get_metadata'), 1);
+		remove_filter('get_user_metadata', array($this, 'decrypt_meta_value' ), 1);
 
 		// Fetch meta normally
 		$value = get_user_meta($user_id, $meta_key, $single);
 
 		// Re-Add the filter for future requestsata
-		add_filter('get_user_metadata', array($this, 'get_metadata'), 1, 4);
+		add_filter('get_user_metadata', array($this, 'decrypt_meta_value' ), 1, 4);
 
 		// TODO: handle exceptions
 		return $this->encryptor->decrypt($value);
+	}
+
+	/**
+	 * @param $query WP_User_Query
+	 */
+	public function transform_meta_query($query){
+		$query->query_vars = $this->meta_query_manager->parse_query_vars($query->query_vars, self::$secure_meta_keys);
+		return;
 	}
 }

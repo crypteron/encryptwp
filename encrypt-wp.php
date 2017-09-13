@@ -63,7 +63,7 @@ class EncryptWP{
 	protected $hooks;
 
 	/**
-	 * @var EncryptWP_EmailPluggable
+	 * @var EncryptWP_Email_Pluggable_Manager
 	 */
 	protected $email_pluggable;
 
@@ -86,7 +86,7 @@ class EncryptWP{
 
 		// Special case handling for pluggables. As of now there's only one for email handling
 		// If more are needed in the future, abstract this into a pluggable parent class
-		$this->email_pluggable = $this->dice->create('EncryptWP_EmailPluggable');
+		$this->email_pluggable = $this->dice->create( 'EncryptWP_Email_Pluggable_Manager' );
 		$this->email_pluggable->init();
 	}
 
@@ -118,8 +118,9 @@ class EncryptWP{
 			require_once $this->plugin_path  . 'libs/trestian-core/trestian-core.php';
 		}
 
-		// Classes
-		require_once $this->plugin_path . 'classes/class-encrypt-wp-email-pluggable.php';
+		// Managers
+		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-email-pluggable-manager.php';
+		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-meta-query-manager.php';
 
 		// Models
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';

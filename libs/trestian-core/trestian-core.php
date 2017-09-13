@@ -85,7 +85,7 @@ class TrestianCore {
 		]);
 
 		// Configure plugin settings
-		$dice->addRule( 'Trestian_Plugin_Settings', [
+		$dice->addRule( 'TrestianCore\\v1\\Trestian_Plugin_Settings', [
 			'shared' => true,
 			'constructParams' => [$plugin_name, $version, $plugin_url, $plugin_path, $prefix]
 		]);

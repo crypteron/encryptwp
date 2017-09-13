@@ -1,7 +1,7 @@
 <?php
 use CipherCore\v1\Encryptor;
 
-class EncryptWP_UserFields {
+class EncryptWP_User_Fields {
 	/**
 	 * @var Encryptor
 	 */
@@ -39,6 +39,8 @@ class EncryptWP_UserFields {
 			// Filters for editing and displaying user fields and
 			add_filter('edit_user_' . $field, array($this, 'get_field'), 1, 2);
 			add_filter('user_' . $field, array($this, 'get_field'), 1, 2);
+			add_filter('the_author', array($this, 'decrypt_author'), 500, 1);
+			add_filter('wp_dropdown_users', array($this, 'decrypt_dropdown_users'), 500, 1);
 		}
 	}
 
@@ -87,5 +89,14 @@ class EncryptWP_UserFields {
 	 */
 	public function get_field($value, $user_id){
 		return $this->encryptor->decrypt($value);
+	}
+
+	public function decrypt_author($author){
+		return $this->encryptor->decrypt($author);
+	}
+
+	public function decrypt_dropdown_users($output){
+		// TODO: regEx match <option value="XX" selected="selected">ENCRYPTED_DISPLAY_NAME (UserLogin)</option>
+		return $output;
 	}
 }

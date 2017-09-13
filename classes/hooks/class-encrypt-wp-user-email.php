@@ -1,7 +1,7 @@
 <?php
 use CipherCore\v1\Encryptor;
 
-class EncryptWP_UserEmail {
+class EncryptWP_User_Email {
 	/**
 	 * @var Encryptor
 	 */
