@@ -13,15 +13,24 @@
  */
 function get_user_by( $field, $value ) {
 	if($field == 'email'){
-		// TODO: search by user meta query once user meta query has been overloaded to handle search prefixes
+		$users = get_users(array('meta_key'=>EncryptWP_Constants::EMAIL_META_KEY, 'meta_value'=>strtolower($value)));
+		if(empty($users)){
+			return false;
+		}
+
+		$user = reset($users);
+
+	} else {
+		$userdata = WP_User::get_data_by( $field, $value );
+
+		if ( !$userdata )
+			return false;
+
+		$user = new WP_User;
+		$user->init( $userdata );
 	}
-	$userdata = WP_User::get_data_by( $field, $value );
 
-	if ( !$userdata )
-		return false;
-
-	$user = new WP_User;
-	$user->init( $userdata );
+	$user->filter = 'display';
 
 	return $user;
 }

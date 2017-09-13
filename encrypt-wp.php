@@ -9,7 +9,7 @@
  * Plugin Name:       EncryptWP
  * Plugin URI:        https://bitbucket.org/Crypteron/cipherwp
  * Description:       Adds military grade encryption and tamper protection to WordPress
- * Version:           1.0.2
+ * Version:           1.0.3
  * Author:            Crypteron
  * Author URI:        https://crypteron.com
  * License:           GPL-3.0+
@@ -75,7 +75,7 @@ class EncryptWP{
 	public function __construct() {
 		$this->plugin_name = 'encrypt-wp';
 		$this->prefix = 'encrypt-wp';
-		$this->version = '1.0';
+		$this->version = '1.0.3';
 		$this->plugin_path = plugin_dir_path(__FILE__);
 		$this->plugin_url = plugin_dir_url(__FILE__);
 
@@ -88,6 +88,10 @@ class EncryptWP{
 		// If more are needed in the future, abstract this into a pluggable parent class
 		$this->email_pluggable = $this->dice->create( 'EncryptWP_Email_Pluggable_Manager' );
 		$this->email_pluggable->init();
+
+		// Default the current user filter to display. This action must be added here since it must
+		// be defined before plugins_loaded
+		add_action('set_current_user', array($this, 'set_current_user_filter'));
 	}
 
 	/**
@@ -169,6 +173,11 @@ class EncryptWP{
 	 */
 	public function encryptor(){
 		return $this->dice->create('CipherCore\\v1\\Encryptor');
+	}
+
+	public function set_current_user_filter(){
+		global $current_user;
+		$current_user->filter = 'display';
 	}
 
 }

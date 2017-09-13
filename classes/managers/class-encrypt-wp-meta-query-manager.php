@@ -34,7 +34,7 @@ class EncryptWP_Meta_Query_Manager{
 					$qv['meta_compare'] = 'RLIKE';
 					$value = isset($qv['meta_value']) ? $qv['meta_value'] : '';
 					$prefix = $this->encryptor->getSearchPrefix($value);
-					$qv['meta_value'] = '^' . $prefix;
+					$qv['meta_value'] = '^' . preg_quote($prefix);
 				}
 			}
 		}
@@ -78,7 +78,7 @@ class EncryptWP_Meta_Query_Manager{
 				$meta_query[$key]['compare'] = 'RLIKE';
 				$value = isset($meta_query[$key]['value']) ? $meta_query[$key]['value'] : '';
 				$prefix = $this->encryptor->getSearchPrefix($value);
-				$meta_query[$key]['value'] = '^' . $prefix;
+				$meta_query[$key]['value'] = '^' . preg_quote($prefix);
 
 				// Otherwise, it's a nested query, so we recurse.
 			} else {

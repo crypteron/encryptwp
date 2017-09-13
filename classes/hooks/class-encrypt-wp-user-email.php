@@ -43,9 +43,9 @@ class EncryptWP_User_Email {
 	 * @param int $user_id
 	 */
 	public function encrypt_email($user_id){
-		// Fetch user email
+		// Fetch user email and convert to lowercase
 		$user = get_user_by('id', $user_id);
-		$user_email = $user->user_email;
+		$user_email = strtolower($user->user_email);
 
 		// Store it in user meta. Note, EncryptWP_UserMeta will automatically encrypt it
 		update_user_meta($user_id, EncryptWP_Constants::EMAIL_META_KEY, $user_email);
