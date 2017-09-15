@@ -1,6 +1,6 @@
 <?php
 namespace TrestianCore\v1;
-class Trestian_Options {
+class Options {
 	/**
 	 * Options Key used to persist CMB2 options
 	 * @var string

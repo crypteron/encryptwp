@@ -9,7 +9,7 @@ namespace TrestianCore\v1;
  * @subpackage TrestianWPManagers/managers
  * @author     Yaron Guez <yaron@trestian.com>
  */
-class Trestian_Ajax_Manager{
+class Ajax_Manager{
 
 	/**
 	 * Return an AJAX response

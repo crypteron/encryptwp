@@ -7,7 +7,7 @@
  */
 namespace TrestianCore\v1;
 
-abstract class Trestian_Page implements ITrestian_Page{
+abstract class Page implements IPage{
 	/**
 	 * @var string
 	 */
@@ -34,7 +34,7 @@ abstract class Trestian_Page implements ITrestian_Page{
 	protected $vm;
 
 	/**
-	 * @var Trestian_Template_Manager
+	 * @var Template_Manager
 	 */
 	protected $template_manager;
 
@@ -46,7 +46,7 @@ abstract class Trestian_Page implements ITrestian_Page{
 	 */
 	protected $template;
 
-	public function __construct(Trestian_Template_Manager $template_manager) {
+	public function __construct(Template_Manager $template_manager) {
 		$this->template_manager = $template_manager;
 		$this->vm = array(
 			'success'=>null,

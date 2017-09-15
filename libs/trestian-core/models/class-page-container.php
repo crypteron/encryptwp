@@ -8,24 +8,24 @@ namespace TrestianCore\v1;
  * Date: 3/16/17
  * Time: 7:15 PM
  */
-class Trestian_Page_Container {
+class Page_Container {
 	/**
-	 * @var ITrestian_Page
+	 * @var IPage
 	 */
 	public $page;
 
 	/**
-	 * @var ITrestian_Options_Manager
+	 * @var IOptions_Manager
 	 */
 	protected $options_manager;
 
 	/**
 	 * Trestian_Page_Container constructor.
 	 *
-	 * @param ITrestian_Page $page
+	 * @param IPage $page
 	 * @param $prefix string
 	 */
-	public function __construct(ITrestian_Page $page, ITrestian_Options_Manager $options_manager) {
+	public function __construct(IPage $page, IOptions_Manager $options_manager) {
 		$this->page = $page;
 		$this->options_manager = $options_manager;
 	}

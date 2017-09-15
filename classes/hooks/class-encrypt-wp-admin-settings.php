@@ -1,0 +1,127 @@
+<?php
+use TrestianCore\v1\Template_Manager;
+use TrestianCore\v1\Plugin_Settings;
+
+class EncryptWP_Admin_Settings {
+
+
+	/**
+	 * @var Template_Manager
+	 */
+	protected $template_manager;
+
+	/**
+	 * @var EncryptWP_Options_Manager
+	 */
+	protected $options_manager;
+
+	/**
+	 * @var Plugin_Settings
+	 */
+	protected $settings;
+
+	public function __construct(
+		Template_Manager $template_manager,
+		EncryptWP_Options_Manager $options_manager,
+		Plugin_Settings $settings
+	) {
+		$this->template_manager = $template_manager;
+		$this->options_manager  = $options_manager;
+		$this->settings         = $settings;
+	}
+
+	public function load_hooks(){
+		add_action('admin_menu', array($this, 'admin_menu'));
+		add_action('admin_init', array($this, 'register_settings'));
+		add_action('update_option_' . EncryptWP_Constants::OPTION_NAME, array($this, 'refresh_options'), 10, 3);
+	}
+
+	/**
+	 * If the options are ever updated manually, refresh the options manager
+	 * @param $old_value
+	 * @param $value
+	 * @param $option
+	 */
+	public function refresh_options($old_value, $value, $option){
+		$this->options_manager->set_from_option_array($value);
+	}
+
+	/**
+	 * Register admin menu
+	 */
+	public function admin_menu(){
+		add_options_page(
+			'EncryptWP Settings',
+			'EncryptWP',
+			'manage_options',
+			EncryptWP_Constants::OPTION_GROUP,
+			array(
+				$this,
+				'display_settings_page'
+			));
+	}
+
+	/**
+	 * Display settings page
+	 */
+	public function display_settings_page(){
+		// check user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// check if the user have submitted the settings
+		// wordpress will add the "settings-updated" $_GET parameter to the url
+		if ( isset( $_GET['settings-updated'] ) ) {
+			// add settings saved message with the class of "updated"
+			add_settings_error( $this->settings->get_prefix() . '_messages', $this->settings->get_prefix() . '_wporg_message', __( 'Settings Saved', $this->settings->get_prefix() ), 'updated' );
+		}
+
+		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings.php', array(
+			'prefix' => $this->settings->get_prefix(),
+			'option_group' => EncryptWP_Constants::OPTION_GROUP
+		));
+	}
+
+	public function register_settings(){
+		// Register settings
+		register_setting( EncryptWP_Constants::OPTION_GROUP, EncryptWP_Constants::OPTION_NAME );
+
+		// Register Main Section
+		$section_main = $this->settings->get_prefix() . '_settings_main';
+		add_settings_section(
+			$section_main,
+			__( 'Configuration', $this->settings->get_prefix() ),
+			array($this, 'display_main_section'),
+			EncryptWP_Constants::OPTION_GROUP
+		);
+
+		// Register a field in the main section for strict mode
+		add_settings_field(
+			'strict_mode',
+			// use $args' label_for to populate the id inside the callback
+			__( 'Strict Mode', $this->settings->get_prefix() ),
+			array($this, 'display_strict_mode'),
+			EncryptWP_Constants::OPTION_GROUP,
+			$section_main,
+			[
+				'label_for' => 'strict_mode',
+				'class' => $this->settings->get_prefix() . '_settings_row'
+			]
+		);
+	}
+
+	public function display_main_section($args){
+		// Any content that goes above the section goes here
+	}
+
+
+	public function display_strict_mode( $args ) {
+		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings-strict-mode.php', array(
+			'options' => $this->options_manager,
+			'args' => $args,
+			'option_name' => EncryptWP_Constants::OPTION_NAME,
+			'prefix' => $this->settings->get_prefix()
+		));
+	}
+}

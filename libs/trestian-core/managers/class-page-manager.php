@@ -9,24 +9,24 @@ namespace TrestianCore\v1;
  * @subpackage TrestianWPManagers/managers
  * @author     Yaron Guez <yaron@trestian.com>
  */
-class Trestian_Page_Manager{
+class Page_Manager{
 	/**
-	 * @var ITrestian_Page[]
+	 * @var IPage[]
 	 */
 	public $pages;
 
 	/**
-	 * @var Trestian_Page_Container[]
+	 * @var Page_Container[]
 	 */
 	public $page_containers;
 
 	/**
-	 * @var Trestian_Plugin_Settings
+	 * @var Plugin_Settings
 	 */
 	protected $settings;
 
 	/**
-	 * @var ITrestian_Options_Manager
+	 * @var IOptions_Manager
 	 */
 	protected $options_manager;
 
@@ -37,7 +37,7 @@ class Trestian_Page_Manager{
 	 *
 	 * @param $options_prefix
 	 */
-    public function __construct(Trestian_Plugin_Settings $settings, ITrestian_Options_Manager $options_manager ) {
+    public function __construct(Plugin_Settings $settings, IOptions_Manager $options_manager ) {
 		$this->pages = array();
 		$this->page_containers = array();
 		$this->settings = $settings;
@@ -47,9 +47,9 @@ class Trestian_Page_Manager{
 	/**
 	 * Add page to be setup on plugin load
 	 *
-	 * @param ITrestian_Page $page
+	 * @param IPage $page
 	 */
-    public function add_page( ITrestian_Page $page){
+    public function add_page( IPage $page){
 	    // Append to list of pages indexed by option field name
     	$this->pages[$page->get_option_field_name()] = $page;
     }
@@ -66,18 +66,18 @@ class Trestian_Page_Manager{
 	/**
 	 * Given a class matching the Trestian page interface, and a page field, configure it for restricting access and displaying content
 	 *
-	 * @param ITrestian_Page $page
+	 * @param IPage $page
 	 * @param $page_field
 	 *
-	 * @return Trestian_Page_Container
+	 * @return Page_Container
 	 */
-    public function setup_page( ITrestian_Page $page){
+    public function setup_page( IPage $page){
 	    // Set Page ID
 	    $page_id = $this->options_manager->get_option_value($page->get_option_field_name(), -1);
 	    $page->set_page_id($page_id);
 
 		// Create page container for page specific hooks
-    	$page_container = new Trestian_Page_Container($page, $this->options_manager);
+    	$page_container = new Page_Container($page, $this->options_manager);
 
     	// Register all page hooks
 	    add_action($this->options_manager->get_register_action(), array($page_container, 'register_page_options'));
@@ -106,14 +106,15 @@ class Trestian_Page_Manager{
 
 	/**
 	 * Get the permalink for a page ID, page option field name, or ITrestian_Page object
-	 * @param $page_identifier int | string | ITrestian_Page
+	 *
+	 * @param $page_identifier int | string | IPage
 	 *
 	 * @return false|string
 	 */
 	public function get_page_url($page_identifier){
 		if(is_numeric($page_identifier)){
 			$page_id = $page_identifier;
-		} else if($page_identifier instanceof ITrestian_Page){
+		} else if( $page_identifier instanceof IPage){
 			$page_id = $page_identifier->get_page_id();
 		} else {
 			$page_id = $this->get_page_id($page_identifier);

@@ -9,10 +9,10 @@ namespace TrestianCore\v1;
  * @subpackage TrestianWPManagers/managers
  * @author     Yaron Guez <yaron@trestian.com>
  */
-class Trestian_Template_Manager {
+class Template_Manager {
 
 	/**
-	 * @var Trestian_Plugin_Settings
+	 * @var Plugin_Settings
 	 */
 	private $settings;
 
@@ -28,9 +28,9 @@ class Trestian_Template_Manager {
 	 *
 	 * @since    1.0.0
 	 *
-	 * @param $settings Trestian_Plugin_Settings
+	 * @param $settings Plugin_Settings
 	 */
-	public function __construct( Trestian_Plugin_Settings $settings, $message_template = null, $template_path = null) {
+	public function __construct( Plugin_Settings $settings, $message_template = null, $template_path = null) {
 		$this->settings          = $settings;
 		$this->message_template  = is_null($message_template) ? 'templates/public/content-trestian-messages.php' : $message_template;
 		$this->template_location = is_null($template_path) ? 'templates/public/' : trailingslashit($template_path);

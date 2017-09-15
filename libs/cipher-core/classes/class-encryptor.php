@@ -185,13 +185,14 @@ class Encryptor {
 		$aad = $header_container->header->AAD;
 		$ciphertext = substr($parameters->ciphertext, $header_container->bytesRead);
 
-		// Verify the AAD if passed
-		if( $parameters->AAD != null && $parameters->AAD != $header_container->header->AAD){
+		// Decrypt the record and authenticate
+		$plaintext = AESGCM::decryptWithAppendedTag($parameters->key, $iv, $ciphertext, $aad, Constants::TAG_SIZE_BITS);
+
+		// Verify the provided AAD matches what was in the header
+		if( $parameters->AAD != $header_container->header->AAD){
 			throw new CipherCore_AAD_Exception("Additional authenticated data (AAD) provided does not match what's in the encrypted record. The data may have been tampered with.");
 		}
 
-		// Decrypt the record
-		$plaintext = AESGCM::decryptWithAppendedTag($parameters->key, $iv, $ciphertext, $aad, Constants::TAG_SIZE_BITS);
 		return $plaintext;
 	}
 
@@ -260,6 +261,5 @@ class Encryptor {
 		}
 
 		return $clear_text;
-
 	}
 }

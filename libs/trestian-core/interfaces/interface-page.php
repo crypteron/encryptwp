@@ -7,7 +7,7 @@
  */
 namespace TrestianCore\v1;
 
-interface ITrestian_Page {
+interface IPage {
 
 	/**
 	 *

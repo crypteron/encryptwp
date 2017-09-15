@@ -1,12 +1,14 @@
 <?php
 use CipherCore\v1\Encryptor;
+use CipherCore\v1\CipherCore_Deserialize_Exception;
+use TrestianCore\v1\Plugin_Settings;
+use TrestianCore\v1\Admin_Notice_Manager;
 
 class EncryptWP_User_Fields {
 	/**
-	 * @var Encryptor
+	 * @var EncryptWP_Encryption_Manager
 	 */
-	protected $encryptor;
-
+	protected $encryption_manager;
 
 	// TODO: store these fields in database and configure with settings
 	/**
@@ -23,8 +25,14 @@ class EncryptWP_User_Fields {
 	// TODO: put in site wide settings
 	const STRICT  = false;
 
-	public function __construct(Encryptor $encryptor) {
-		$this->encryptor = $encryptor;
+	/**
+	 * EncryptWP_User_Fields constructor.
+	 *
+	 * @param Encryptor $encryptor
+	 * @param Plugin_Settings $settings
+	 */
+	public function __construct(EncryptWP_Encryption_Manager $encryption_manager) {
+		$this->encryption_manager   = $encryption_manager;
 	}
 
 	public function load_hooks(){
@@ -53,13 +61,12 @@ class EncryptWP_User_Fields {
 	 */
 	private function save_field_internal($value, $searchable = false){
 		// If value is already encrypted, do nothing
-		if($this->encryptor->try_decrypt($value) !== false){
+		if( $this->encryption_manager->is_encrypted($value) !== false){
 			return $value;
 		}
 
 		// Encrypt value
-		// TODO: add error handling
-		$encrypted_value = $this->encryptor->encrypt($value, null, $searchable);
+		$encrypted_value = $this->encryption_manager->encrypt($value, null, $searchable);
 
 		return $encrypted_value;
 	}
@@ -88,11 +95,11 @@ class EncryptWP_User_Fields {
 	 * @return string - cleartext
 	 */
 	public function get_field($value, $user_id){
-		return $this->encryptor->decrypt($value);
+		return $this->encryption_manager->decrypt( $value, null, 'user');
 	}
 
 	public function decrypt_author($author){
-		return $this->encryptor->decrypt($author);
+		return $this->encryption_manager->decrypt($author, null, 'user', 'display_name');
 	}
 
 	public function decrypt_dropdown_users($output){

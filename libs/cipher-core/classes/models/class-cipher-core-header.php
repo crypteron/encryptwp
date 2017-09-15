@@ -42,7 +42,7 @@ class CipherCore_Header {
 	 * Additional Authenticated Data. Useful for row binding.
 	 * @var string | null
 	 */
-	public $AAD = null;
+	public  $AAD = null;
 
 	/**
 	 * For extra features such as compression

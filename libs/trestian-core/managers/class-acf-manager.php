@@ -7,15 +7,15 @@
  */
 namespace TrestianCore\v1;
 
-class Trestian_Acf_Manager implements ITrestian_Options_Manager {
+class Acf_Manager implements IOptions_Manager {
 
 	const REGISTER_ACTION = 'init';
 	/**
-	 * @var Trestian_Plugin_Settings
+	 * @var Plugin_Settings
 	 */
 	protected $settings;
 
-	public function __construct(Trestian_Plugin_Settings $settings) {
+	public function __construct(Plugin_Settings $settings) {
 		$this->settings = $settings;
 	}
 
@@ -34,11 +34,11 @@ class Trestian_Acf_Manager implements ITrestian_Options_Manager {
 
 	/**
 	 * Register an option field for a page in ACF
-	 * @param Trestian_Page_Container $page_container
+	 * @param Page_Container $page_container
 	 *
 	 * @return void
 	 */
-	public function register_page_options( ITrestian_Page $page) {
+	public function register_page_options( IPage $page) {
 		acf_add_local_field(array(
 			'key' => $this->settings->get_prefix(). '_' . $page->get_option_field_name(),
 			'label' => $page->get_option_field_label(),

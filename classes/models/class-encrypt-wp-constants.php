@@ -25,5 +25,8 @@ class EncryptWP_Constants {
 	 */
 	const ENCRYPT_EMAIL = true;
 
+	const OPTION_GROUP = 'encryptwp';
+
+	const OPTION_NAME = 'encryptwp_options';
 
 }

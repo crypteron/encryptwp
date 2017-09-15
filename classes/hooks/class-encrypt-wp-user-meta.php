@@ -3,9 +3,9 @@ use \CipherCore\v1\Encryptor;
 
 class EncryptWP_User_Meta{
 	/**
-	 * @var Encryptor
+	 * @var EncryptWP_Encryption_Manager
 	 */
-	protected $encryptor;
+	protected $encryption_manager;
 
 	/**
 	 * @var EncryptWP_Meta_Query_Manager
@@ -40,10 +40,10 @@ class EncryptWP_User_Meta{
 	/**
 	 * EncryptWP_UserMeta constructor.
 	 *
-	 * @param Encryptor $encryptor
+	 * @param EncryptWP_Encryption_Manager $encryptor
 	 */
-	public function __construct(Encryptor $encryptor, EncryptWP_Meta_Query_Manager $meta_query_manager) {
-		$this->encryptor = $encryptor;
+	public function __construct(EncryptWP_Encryption_Manager $encryptor, EncryptWP_Meta_Query_Manager $meta_query_manager) {
+		$this->encryption_manager = $encryptor;
 		$this->meta_query_manager = $meta_query_manager;
 	}
 
@@ -79,13 +79,13 @@ class EncryptWP_User_Meta{
 		$searchable = self::$secure_meta_keys[$meta_key];
 
 		// If value is already encrypted, do nothing
-		if($this->encryptor->try_decrypt($meta_value) !== false){
+		if( $this->encryption_manager->is_encrypted($meta_value)){
 			return $null;
 		}
 
 		// Encrypt text
 		// TODO: handle exceptions
-		$encrypted_value = $this->encryptor->encrypt($meta_value, null, $searchable);
+		$encrypted_value = $this->encryption_manager->encrypt($meta_value, null, $searchable);
 
 		// Remove this save meta filter so we can avoid an infinite loop
 		remove_filter('update_user_metadata', array($this, 'encrypt_meta_value' ), 100);
@@ -125,8 +125,7 @@ class EncryptWP_User_Meta{
 		// Re-Add the filter for future requestsata
 		add_filter('get_user_metadata', array($this, 'decrypt_meta_value' ), 1, 4);
 
-		// TODO: handle exceptions
-		return $this->encryptor->decrypt($value);
+		return $this->encryption_manager->decrypt($value, null, 'user meta', $meta_key);
 	}
 
 	/**

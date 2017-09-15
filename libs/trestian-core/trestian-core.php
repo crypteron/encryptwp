@@ -22,23 +22,24 @@ if(WP_DEBUG){
 }
 
 // Interfaces
-require_once 'interfaces/interface-trestian-page.php';
-require_once 'interfaces/interface-trestian-options-manager.php';
+require_once 'interfaces/interface-page.php';
+require_once 'interfaces/interface-options-manager.php';
 
 // Managers
-require_once 'managers/class-trestian-ajax-manager.php';
-require_once 'managers/class-trestian-page-manager.php';
-require_once 'managers/class-trestian-template-manager.php';
-require_once 'managers/class-trestian-acf-manager.php';
-require_once 'managers/class-trestian-cmb2-manager.php';
+require_once 'managers/class-ajax-manager.php';
+require_once 'managers/class-page-manager.php';
+require_once 'managers/class-template-manager.php';
+require_once 'managers/class-acf-manager.php';
+require_once 'managers/class-cmb2-manager.php';
+require_once 'managers/class-admin-notice-manager.php';
 
 // Models
-require_once 'models/class-trestian-page.php';
-require_once 'models/class-trestian-page-container.php';
-require_once 'models/class-trestian-plugin-settings.php';
-require_once 'models/class-trestian-constants.php';
-require_once 'models/class-trestian-options.php';
-
+require_once 'models/class-page.php';
+require_once 'models/class-page-container.php';
+require_once 'models/class-plugin-settings.php';
+require_once 'models/class-constants.php';
+require_once 'models/class-options.php';
+require_once 'models/class-admin-notice.php';
 
 class TrestianCore {
 	/**
@@ -75,17 +76,17 @@ class TrestianCore {
 
 		// Parse optios and defaults
 		$options = wp_parse_args($options, [
-			'cmb2_options_key' => $prefix . '_' . Trestian_Constants::CMB2_OPTIONS_KEY
+			'cmb2_options_key' => $prefix . '_' . Constants::CMB2_OPTIONS_KEY
 		]);
 
 		// Set up options object
-		$dice->addRule('Trestian_Options', [
+		$dice->addRule('TrestianCore\\v1\\Options', [
 			'shared'=>true,
 			'constructParams' => [$options['cmb2_options_key']]
 		]);
 
 		// Configure plugin settings
-		$dice->addRule( 'TrestianCore\\v1\\Trestian_Plugin_Settings', [
+		$dice->addRule( 'TrestianCore\\v1\\Plugin_Settings', [
 			'shared' => true,
 			'constructParams' => [$plugin_name, $version, $plugin_url, $plugin_path, $prefix]
 		]);
@@ -101,18 +102,18 @@ class TrestianCore {
 
 		// Set Options Manager
 		$dice->addRule('*', ['substitutions' => [
-			'ITrestian_Options_Manager' => [
-				'instance'=>$options_manager
+			'TrestianCore\\v1\\IOptions_Manager' => [
+				'instance'=>"TrestianCore\\v1\\$options_manager"
 			]
 		]]);
 
-		// Set all Trestian WP Managers as shared instances
+		// Set all Trestian Core Managers as shared instances
 		$managers = [
-			'Trestian_Acf_Manager',
-			'Trestian_Cmb2_Manager',
-			'Trestian_Ajax_Manager',
-			'Trestian_Page_Manager',
-			'Trestian_Template_Manager'
+			'TrestianCore\\v1\\Acf_Manager',
+			'TrestianCore\\v1\\Cmb2_Manager',
+			'TrestianCore\\v1\\Ajax_Manager',
+			'TrestianCore\\v1\\Page_Manager',
+			'TrestianCore\\v1\\Template_Manager'
 		];
 
 		foreach ($managers as $manager){

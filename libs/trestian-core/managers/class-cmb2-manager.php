@@ -1,22 +1,22 @@
 <?php
 namespace TrestianCore\v1;
 
-class Trestian_Cmb2_Manager implements ITrestian_Options_Manager {
+class Cmb2_Manager implements IOptions_Manager {
 
 	/**
-	 * @var Trestian_Plugin_Settings
+	 * @var Plugin_Settings
 	 */
 	protected $settings;
 
 	/**
-	 * @var Trestian_Options
+	 * @var Options
 	 */
 	protected $options;
 
 	const REGISTER_ACTION = 'cmb2_admin_init';
 
 
-	public function __construct(Trestian_Plugin_Settings $settings, Trestian_Options $options) {
+	public function __construct(Plugin_Settings $settings, Options $options) {
 		$this->settings = $settings;
 		$this->options = $options;
 	}
@@ -52,11 +52,11 @@ class Trestian_Cmb2_Manager implements ITrestian_Options_Manager {
 
 	/**
 	 * Register an option field for a page in ACF
-	 * @param Trestian_Page_Container $page_container
+	 * @param Page_Container $page_container
 	 *
 	 * @return void
 	 */
-	public function register_page_options( ITrestian_Page $page) {
+	public function register_page_options( IPage $page) {
 		$cmb = new_cmb2_box( array(
 			'id'         => $page->get_option_group_key(),
 			'hookup'     => false,

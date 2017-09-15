@@ -7,7 +7,7 @@
  */
 namespace TrestianCore\v1;
 
-class Trestian_Plugin_Settings {
+class Plugin_Settings {
 	/**
 	 * @var string
 	 */

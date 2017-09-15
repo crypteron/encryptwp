@@ -13,7 +13,7 @@ class EncryptWP_Email_Pluggable_Manager {
 	 */
 	protected $settings;
 
-	public function __construct(TrestianCore\v1\Trestian_Plugin_Settings $settings) {
+	public function __construct(TrestianCore\v1\Plugin_Settings $settings) {
 		$this->settings = $settings;
 	}
 

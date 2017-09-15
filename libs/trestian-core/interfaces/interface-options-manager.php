@@ -7,7 +7,7 @@
  */
 namespace TrestianCore\v1;
 
-interface ITrestian_Options_Manager {
+interface IOptions_Manager {
 	/**
 	 * @param $key string
 	 *
@@ -16,11 +16,11 @@ interface ITrestian_Options_Manager {
 	public function get_option_value($key, $default);
 
 	/**
-	 * @param ITrestian_Page $page;
+	 * @param IPage $page;
 	 *
 	 * @return void
 	 */
-	public function register_page_options(ITrestian_Page $page);
+	public function register_page_options(IPage $page);
 
 	/**
 	 * Get the action used to register the page options

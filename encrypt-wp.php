@@ -125,6 +125,8 @@ class EncryptWP{
 		// Managers
 		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-email-pluggable-manager.php';
 		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-meta-query-manager.php';
+		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-options-manager.php';
+		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-encryption-manager.php';
 
 		// Models
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';
@@ -136,6 +138,7 @@ class EncryptWP{
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-meta.php';
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-fields.php';
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-email.php';
+		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-admin-settings.php';
 
 	}
 
@@ -148,9 +151,14 @@ class EncryptWP{
 		// Set all objects to be created as shared instance
 		$dice->addRule('*', ['shared'=>true]);
 
+		// Fetch the plugin options
+		/**
+		 * @var $options EncryptWP_Options_Manager
+		 */
+		$options = $dice->create('EncryptWP_Options_Manager');
+
 		// Enable or disable strict mode.
-		// TODO: move this
-		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[EncryptWP_Constants::STRICT_MODE]]);
+		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[$options->strict_mode]]);
 
 		return $dice;
 	}
