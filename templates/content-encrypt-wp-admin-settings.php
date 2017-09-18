@@ -4,7 +4,6 @@
  * @var $prefix string
  */
 ?>
-<?php settings_errors( $prefix . '_messages' ); ?>
 
 <div class="wrap">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>

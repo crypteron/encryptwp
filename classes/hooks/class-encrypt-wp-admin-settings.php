@@ -13,7 +13,7 @@ class EncryptWP_Admin_Settings {
 	/**
 	 * @var EncryptWP_Options_Manager
 	 */
-	protected $options_manager;
+	protected $options;
 
 	/**
 	 * @var Plugin_Settings
@@ -26,7 +26,7 @@ class EncryptWP_Admin_Settings {
 		Plugin_Settings $settings
 	) {
 		$this->template_manager = $template_manager;
-		$this->options_manager  = $options_manager;
+		$this->options          = $options_manager;
 		$this->settings         = $settings;
 	}
 
@@ -34,6 +34,8 @@ class EncryptWP_Admin_Settings {
 		add_action('admin_menu', array($this, 'admin_menu'));
 		add_action('admin_init', array($this, 'register_settings'));
 		add_action('update_option_' . EncryptWP_Constants::OPTION_NAME, array($this, 'refresh_options'), 10, 3);
+		add_action('admin_enqueue_scripts', array($this, 'load_styles'));
+		add_action('admin_enqueue_scripts', array($this, 'load_scripts'));
 	}
 
 	/**
@@ -43,7 +45,7 @@ class EncryptWP_Admin_Settings {
 	 * @param $option
 	 */
 	public function refresh_options($old_value, $value, $option){
-		$this->options_manager->set_from_option_array($value);
+		$this->options->set_from_option_array($value);
 	}
 
 	/**
@@ -68,13 +70,6 @@ class EncryptWP_Admin_Settings {
 		// check user capabilities
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
-		}
-
-		// check if the user have submitted the settings
-		// wordpress will add the "settings-updated" $_GET parameter to the url
-		if ( isset( $_GET['settings-updated'] ) ) {
-			// add settings saved message with the class of "updated"
-			add_settings_error( $this->settings->get_prefix() . '_messages', $this->settings->get_prefix() . '_wporg_message', __( 'Settings Saved', $this->settings->get_prefix() ), 'updated' );
 		}
 
 		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings.php', array(
@@ -109,6 +104,20 @@ class EncryptWP_Admin_Settings {
 				'class' => $this->settings->get_prefix() . '_settings_row'
 			]
 		);
+
+		// Register a field in the main section for strict mode
+		add_settings_field(
+			'encrypt_email',
+			// use $args' label_for to populate the id inside the callback
+			__( 'Encrypt Email', $this->settings->get_prefix() ),
+			array($this, 'display_encrypt_email'),
+			EncryptWP_Constants::OPTION_GROUP,
+			$section_main,
+			[
+				'label_for' => 'encrypt_email',
+				'class' => $this->settings->get_prefix() . '_settings_row'
+			]
+		);
 	}
 
 	public function display_main_section($args){
@@ -118,10 +127,40 @@ class EncryptWP_Admin_Settings {
 
 	public function display_strict_mode( $args ) {
 		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings-strict-mode.php', array(
-			'options' => $this->options_manager,
+			'options' => $this->options,
 			'args' => $args,
 			'option_name' => EncryptWP_Constants::OPTION_NAME,
 			'prefix' => $this->settings->get_prefix()
 		));
+	}
+
+	public function display_encrypt_email( $args ) {
+		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings-encrypt-email.php', array(
+			'options' => $this->options,
+			'args' => $args,
+			'option_name' => EncryptWP_Constants::OPTION_NAME,
+			'prefix' => $this->settings->get_prefix()
+		));
+	}
+
+	public function load_styles($hook){
+		if($hook != 'settings_page_encryptwp'){
+			return;
+		}
+		wp_enqueue_style($this->settings->get_prefix() . '_admin_settings', $this->settings->get_plugin_url() . '/assets/css/admin-settings.css', array(), $this->settings->get_version());
+	}
+
+	public function load_scripts($hook){
+		if($hook != 'settings_page_encryptwp'){
+			return;
+		}
+
+		wp_register_script($this->settings->get_prefix() . '_admin_settings', $this->settings->get_plugin_url() . '/assets/js/admin-settings.js', array('jquery'), $this->settings->get_version());
+		$path = get_admin_url() . '?' . EncryptWP_Email_Pluggable_Manager::EMAIL_PLUGGABLE . '=1';
+		wp_localize_script($this->settings->get_prefix() . '_admin_settings', 'ENCRYPT_WP_ADMIN', array(
+			'encrypt_email_enabled'=>$this->options->encrypt_email,
+			'encrypt_email_path'=>$path
+			));
+		wp_enqueue_script($this->settings->get_prefix() . '_admin_settings');
 	}
 }

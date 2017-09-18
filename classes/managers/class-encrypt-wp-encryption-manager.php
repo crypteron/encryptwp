@@ -136,7 +136,7 @@ class EncryptWP_Encryption_Manager {
 			return $record;
 		} else {
 			// TODO: log and email admin
-			return $this->options->frontend_error_placeholder;
+			return $record;
 		}
 	}
 
@@ -162,7 +162,7 @@ class EncryptWP_Encryption_Manager {
 			return $record;
 		} else {
 			// TODO: log and email admin
-			return $this->options->frontend_error_placeholder;
+			return $record;
 		}
 
 

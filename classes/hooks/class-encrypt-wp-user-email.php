@@ -3,17 +3,17 @@ use CipherCore\v1\Encryptor;
 
 class EncryptWP_User_Email {
 	/**
-	 * @var Encryptor
+	 * @var EncryptWP_Options_Manager
 	 */
-	protected $encryptor;
+	protected $options;
 
 	/**
 	 * EncryptWP_UserEmail constructor.
 	 *
-	 * @param Encryptor $encryptor
+	 * @param EncryptWP_Options_Manager $options
 	 */
-	public function __construct(Encryptor $encryptor) {
-		$this->encryptor = $encryptor;
+	public function __construct(EncryptWP_Options_Manager $options) {
+		$this->options = $options;
 	}
 
 	/**
@@ -21,7 +21,7 @@ class EncryptWP_User_Email {
 	 */
 	public function load_hooks(){
 		// Don't load hooks if email encryption is turned off. TODO: move setting to database
-		if(!EncryptWP_Constants::ENCRYPT_EMAIL){
+		if(!$this->options->encrypt_email){
 			return;
 		}
 
@@ -73,7 +73,7 @@ class EncryptWP_User_Email {
 		// See if email is obfuscated or not
 		if($value != sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user_id)){
 			// If email is not obfuscated either return it or trigger error in secure mode.
-			if(EncryptWP_Constants::STRICT_MODE){
+			if($this->options->strict_mode){
 				throw new EncryptWP_Exception("Insecure email address found in wp_users table: $value for user ID: $user_id");
 			} else {
 				return $value;

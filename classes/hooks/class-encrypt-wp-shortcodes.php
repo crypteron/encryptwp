@@ -19,11 +19,11 @@ class EncryptWP_Shortcodes {
 	}
 
 	public function encrypt($args, $content){
-		return $this->encryptor->encrypt($content);
+		return encrypt_wp()->encryptor()->encrypt($content, null, false);
 	}
 
 	public function decrypt($args, $content){
-		return $this->encryptor->decrypt($content );
+		return encrypt_wp()->encryptor()->decrypt($content, null, 'shortcode' );
 	}
 
 	public function generate_key($args){

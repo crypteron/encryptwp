@@ -1,13 +1,30 @@
 <?php
 class EncryptWP_Options_Manager{
 
+	/**
+	 * @var bool
+	 */
 	public $strict_mode;
 
+	/**
+	 * @var array
+	 */
 	public $user_meta_fields;
 
+	/**
+	 * @var array
+	 */
 	public $user_fields;
 
-	public $frontend_error_placeholder;
+	/**
+	 * @var string[]
+	 */
+	public $incompatible_plugins;
+
+	/**
+	 * @var bool
+	 */
+	public $encrypt_email;
 
 	public function __construct() {
 		$options = get_option(EncryptWP_Constants::OPTION_NAME);
@@ -18,6 +35,8 @@ class EncryptWP_Options_Manager{
 		$options = wp_parse_args($options, array(
 			'strict_mode' => false,
 			'frontend_error_placeholder' => 'HIDDEN',
+			'encrypt_email' => true,
+			'incompatible_plugins' => array(),
 			'user_meta_fields' => array(
 				'billing_phone' => 0,
 				'phone_number' => false,
@@ -46,14 +65,18 @@ class EncryptWP_Options_Manager{
 		$this->frontend_error_placeholder = $options['frontend_error_placeholder'];
 		$this->user_meta_fields = $this->convert_boolean($options['user_meta_fields']);
 		$this->user_fields = $this->convert_boolean($options['user_fields']);
+		$this->encrypt_email = (bool)$options['encrypt_email'];
+		$this->incompatible_plugins = $options['incompatible_plugins'];
 	}
 
 	public function get_option_array(){
 		return array(
-			'strict_mode' => $this->strict_mode,
+			'strict_mode' => $this->strict_mode ? '1' : '0',
 			'frontend_error_placeholder' => $this->frontend_error_placeholder,
-			'user_meta_fields' => $this->user_meta_fields,
-			'user_fields' => $this->user_fields
+			'user_meta_fields' => $this->convert_from_boolean($this->user_meta_fields),
+			'user_fields' => $this->convert_from_boolean($this->user_fields),
+			'encrypt_email' => $this->encrypt_email ? '1' : '0',
+			'incompatible_plugins' => $this->incompatible_plugins
 		);
 	}
 
@@ -65,6 +88,14 @@ class EncryptWP_Options_Manager{
 	public function convert_boolean($options){
 		foreach($options as $key => $value){
 			$options[$key] = (bool) $value;
+		}
+
+		return $options;
+	}
+
+	public function convert_from_boolean($options){
+		foreach($options as $key => $value){
+			$options[$key] = $value ? '1' : '0';
 		}
 
 		return $options;
