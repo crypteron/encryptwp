@@ -16,4 +16,6 @@ class EncryptWP_Constants {
 
 	const OPTION_NAME = 'encryptwp_options';
 
+	const CACHE_GROUP = 'encryptwp';
+
 }

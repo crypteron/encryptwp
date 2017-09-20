@@ -27,23 +27,31 @@ class EncryptWP_Encryption_Manager {
 	protected $options;
 
 	/**
+	 * @var EncryptWP_Error_Manager
+	 */
+	protected $error_manager;
+
+	/**
 	 * EncryptWP_Encryption_Manager constructor.
 	 *
 	 * @param Encryptor $encryptor
 	 * @param Plugin_Settings $settings
 	 * @param Admin_Notice_Manager $admin_notice_manager
 	 * @param EncryptWP_Options_Manager $options
+	 * @param EncryptWP_Error_Manager $error_manager
 	 */
 	public function __construct(
 		Encryptor $encryptor,
 		Plugin_Settings $settings,
 		Admin_Notice_Manager $admin_notice_manager,
-		EncryptWP_Options_Manager $options
+		EncryptWP_Options_Manager $options,
+		EncryptWP_Error_Manager $error_manager
 	) {
 		$this->encryptor = $encryptor;
 		$this->settings = $settings;
 		$this->admin_notice_manager = $admin_notice_manager;;
 		$this->options = $options;
+		$this->error_manager = $error_manager;
 	}
 
 	/**
@@ -52,11 +60,16 @@ class EncryptWP_Encryption_Manager {
 	 * @param $clear_text string - the text to encrypt
 	 * @param $aad string - any additional authenticated data
 	 * @param $searchable - whether or not the encrypted text should be searchable
-	 *
+	 * @param $context string - what type of data is this, e.g. user or user meta
+	 * @param $field string - what field is this, e.g. first_name
 	 * @return string
 	 */
-	public function encrypt($clear_text, $aad, $searchable){
-		return $this->encryptor->encrypt($clear_text, $aad, $searchable);
+	public function encrypt($clear_text, $aad, $searchable, $context = null, $field = null){
+		try {
+			return $this->encryptor->encrypt( $clear_text, $aad, $searchable );
+		} catch (Exception $e){
+			return $this->error_manager->encrypt_failure($clear_text, $e, $context, $field);
+		}
 	}
 
 	/**
@@ -74,11 +87,11 @@ class EncryptWP_Encryption_Manager {
 			return $this->encryptor->decrypt( $encrypted_record, $aad );
 		}
 		catch(AvroException $e){
-			return $this->handle_cleartext($encrypted_record, $context, $field);
+			return $this->error_manager->cleartext_found($encrypted_record, $context, $field);
 		} catch(CipherCore_Deserialize_Exception $e){
-			return $this->handle_cleartext($encrypted_record, $context, $field);
+			return $this->error_manager->cleartext_found($encrypted_record, $context, $field);
 		} catch(Exception $e){
-			return $this->handle_decrypt_failure($encrypted_record, $e, $context, $field);
+			return $this->error_manager->decrypt_failure($encrypted_record, $e, $context, $field);
 		}
 	}
 
@@ -100,73 +113,26 @@ class EncryptWP_Encryption_Manager {
 	}
 
 	/**
-	 * Helper function to generate a context string for errors based on context and field name.
+	 * Gets a search prefix for a given string. Exact match only, case sensitive.
 	 *
-	 * @param $context string
-	 * @param $field string
+	 * @param $string
 	 *
 	 * @return string
 	 */
-	private function get_context_string($context, $field){
-		$context = is_null($context) ? __('sensitive', $this->settings->get_prefix()) : $context;
-		$context = is_null($field) ? sprintf(__('a %s field', $this->settings->get_prefix()),$context ) : sprintf(__('the %s field %s', $this->settings->get_prefix()), $context, $field);
-
-		return $context;
+	public function get_search_prefix($string){
+		return $this->encryptor->getSearchPrefix($string);
 	}
 
 	/**
-	 * Helper function to handle clear text being found in a secured field while in strict mode.
-	 * Displays error in admin and obfuscates text on frontend.
+	 * Gets a regular expression string to use in a query for encrypted text
 	 *
-	 * @param $record string - the clear text that was found
-	 * @param $context - where the data was stored
-	 * @param $field - the data field
+	 * @param $string - string to search for
 	 *
-	 * @return string - the clear text if in admin and the obfuscated text if on frontend
+	 * @return string
 	 */
-	private function handle_cleartext($record, $context, $field){
-
-		if(is_admin()) {
-			$context = $this->get_context_string($context, $field);
-			$error = sprintf(__( "DANGER! Clear text has been found in %s. ", $this->settings->get_prefix() ), $context);
-			$error .= sprintf(__("The text: '%s' should have been encrypted and may have been tampered with. ", $this->settings->get_prefix()), $record);
-			$error .= __( "If your database is not fully encrypted yet, turn off 'Strict Mode' within EncryptWP settings.", $this->settings->get_prefix() );
-			$this->admin_notice_manager->add_notice( $error, 'error' );
-
-			return $record;
-		} else {
-			// TODO: log and email admin
-			return $record;
-		}
-	}
-
-	/**
-	 * Helper function to handle decryption failure. Displays an error with the relevant information on
-	 * the admin dashboard and obfuscates the text on the frontend.
-	 *
-	 * @param $record string - The encrypted record that failed to decrypt
-	 * @param $exception Exception - The exception that occurred
-	 * @param $context string - The type of data
-	 * @param $field string - The field being decrypted
-	 *
-	 * @return string - The encrypted text in admin and obfuscated text on the frontend.
-	 */
-	private function handle_decrypt_failure($record, $exception, $context, $field){
-		if(is_admin()){
-			$context = $this->get_context_string($context, $field);
-			$error = sprintf(__('DANGER! Decryption failed on %s. Unable to decrypt the text: %s. The following exception occurred: %s', $this->settings->get_prefix()), $context, $record, $exception->getMessage());
-
-			// TODO: email full stack trace to admin
-			$this->admin_notice_manager->add_notice($error, 'error');
-
-			return $record;
-		} else {
-			// TODO: log and email admin
-			return $record;
-		}
-
-
-
+	public function get_search_regex($string) {
+		$prefix = $this->get_search_prefix($string);
+		return '^' . preg_quote($prefix);
 	}
 
 }

@@ -22,9 +22,6 @@ class EncryptWP_User_Fields {
 		'display_name' => false
 	);
 
-	// TODO: put in site wide settings
-	const STRICT  = false;
-
 	/**
 	 * EncryptWP_User_Fields constructor.
 	 *

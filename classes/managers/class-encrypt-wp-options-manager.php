@@ -2,29 +2,34 @@
 class EncryptWP_Options_Manager{
 
 	/**
-	 * @var bool
+	 * @var bool - Whether an error should occur when clear text is found in a secure field
 	 */
 	public $strict_mode;
 
 	/**
-	 * @var array
+	 * @var array - The user meta fields to encrypt
 	 */
 	public $user_meta_fields;
 
 	/**
-	 * @var array
+	 * @var array - The user fields to encrypt
 	 */
 	public $user_fields;
 
 	/**
-	 * @var string[]
+	 * @var string[] - A list of the plugins that were activated since email activated was successfully turned on
 	 */
 	public $incompatible_plugins;
 
 	/**
-	 * @var bool
+	 * @var bool - Whether or not to encrypt email addresses
 	 */
 	public $encrypt_email;
+
+	/**
+	 * @var string[] - Admin email addresses to notify on error
+	 */
+	public $admin_notify;
 
 	public function __construct() {
 		$options = get_option(EncryptWP_Constants::OPTION_NAME);
@@ -32,11 +37,13 @@ class EncryptWP_Options_Manager{
 	}
 
 	public function set_from_option_array($options){
+		// Defaults
 		$options = wp_parse_args($options, array(
 			'strict_mode' => false,
 			'frontend_error_placeholder' => 'HIDDEN',
 			'encrypt_email' => true,
 			'incompatible_plugins' => array(),
+			'admin_notify' => array('yaron@crypteron.com'),
 			'user_meta_fields' => array(
 				'billing_phone' => 0,
 				'phone_number' => false,
@@ -67,6 +74,7 @@ class EncryptWP_Options_Manager{
 		$this->user_fields = $this->convert_boolean($options['user_fields']);
 		$this->encrypt_email = (bool)$options['encrypt_email'];
 		$this->incompatible_plugins = $options['incompatible_plugins'];
+		$this->admin_notify = $options['admin_notify'];
 	}
 
 	public function get_option_array(){
@@ -76,7 +84,8 @@ class EncryptWP_Options_Manager{
 			'user_meta_fields' => $this->convert_from_boolean($this->user_meta_fields),
 			'user_fields' => $this->convert_from_boolean($this->user_fields),
 			'encrypt_email' => $this->encrypt_email ? '1' : '0',
-			'incompatible_plugins' => $this->incompatible_plugins
+			'incompatible_plugins' => $this->incompatible_plugins,
+			'admin_notify' => $this->admin_notify
 		);
 	}
 

@@ -7,13 +7,17 @@ class EncryptWP_User_Email {
 	 */
 	protected $options;
 
+	protected $error_manager;
+
 	/**
 	 * EncryptWP_UserEmail constructor.
 	 *
 	 * @param EncryptWP_Options_Manager $options
+	 * @param EncryptWP_Error_Manager $error_manager
 	 */
-	public function __construct(EncryptWP_Options_Manager $options) {
+	public function __construct(EncryptWP_Options_Manager $options, EncryptWP_Error_Manager $error_manager) {
 		$this->options = $options;
+		$this->error_manager = $error_manager;
 	}
 
 	/**
@@ -74,7 +78,7 @@ class EncryptWP_User_Email {
 		if($value != sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user_id)){
 			// If email is not obfuscated either return it or trigger error in secure mode.
 			if($this->options->strict_mode){
-				throw new EncryptWP_Exception("Insecure email address found in wp_users table: $value for user ID: $user_id");
+				$this->error_manager->cleartext_found($value, 'users', 'user_email');
 			} else {
 				return $value;
 			}
@@ -84,7 +88,7 @@ class EncryptWP_User_Email {
 		$user_email = get_user_meta($user_id, EncryptWP_Constants::EMAIL_META_KEY, true);
 
 		if($user_email === false){
-			throw new EncryptWP_Exception("No encrypted email address found in wp_user_meta for user ID: $user_id");
+			$this->error_manager->decrypt_failure($value, new EncryptWP_Exception("No encrypted email address found in wp_user_meta for user ID: $user_id"), 'user_meta', 'secure_user_email');
 		}
 
 		return $user_email;
