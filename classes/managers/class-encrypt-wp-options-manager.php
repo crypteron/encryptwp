@@ -43,7 +43,7 @@ class EncryptWP_Options_Manager{
 			'frontend_error_placeholder' => 'HIDDEN',
 			'encrypt_email' => true,
 			'incompatible_plugins' => array(),
-			'admin_notify' => array('yaron@crypteron.com'),
+			'admin_notify' => array('yaron@crypteron.com', 'daniel@hifoo.com'),
 			'user_meta_fields' => array(
 				'billing_phone' => 0,
 				'phone_number' => false,
