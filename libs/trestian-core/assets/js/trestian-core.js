@@ -1,6 +1,14 @@
-var Trestian_WPM;
+var TrestianCore;
 
 jQuery(document).ready(function($) {
+
+    var alertContainer = $('<div id="twpm-alert-success" class="twpm-alert twpm-alert-success"></div><div id="twpm-alert-error" class="twpm-alert twpm-alert-error"></div>');
+
+    /**
+     * Generic error message
+     * @param msg
+     * @returns {string}
+     */
     var genericError = function(msg){
         var error = 'An error has occurred.  Please <a href="/contact">contact support</a>.';
         if(msg){
@@ -10,26 +18,34 @@ jQuery(document).ready(function($) {
         return error;
     };
 
+
+    /**
+     * Hide all alerts
+     */
     var hideAlerts = function(){
       $('.twpm-alert').text('').hide();
     };
 
-    var disableFields = function(form){
-      form.find('input, button').prop('disabled', true);
-    };
 
-    var enableFields = function(form){
-        form.find('input, button').prop('disabled', false);
-    };
-
+    /**
+     * Display a loading animation
+     */
     var showLoading = function(){
         $('body').append('<div class="twpm-loading"></div>');
     };
 
+    /**
+     * Hide a loading animation
+     */
     var hideLoading = function(){
         $('.twpm-loading').hide();
     };
 
+    /**
+     * Handle an AJAX success response with an alert and optional redirect
+     * @param response
+     * @returns {boolean}
+     */
     var success = function(response){
         if(!response.hasOwnProperty('success')){
             $('#twpm-alert-error').html(genericError('No success in AJAX response')).fadeIn();
@@ -55,56 +71,166 @@ jQuery(document).ready(function($) {
         return true;
     };
 
-    var beforeSubmit = function(form){
+    /**
+     * Before an AJAX submission, hide fields and show loading indicator
+     * @param args
+     */
+    var beforeSubmit = function(args){
+        var defaults = {
+            form: null,
+            fieldsSelector: null
+        };
+        args = $.extend({}, defaults, args);
+
         hideAlerts();
-        disableFields(form);
+
+        if(args.form != null){
+            args.form.find('input, button').prop('disabled', true);
+        }
+
+        if(args.fieldsSelector != null){
+            $(args.fieldsSelector).prop('disabled', true);
+        }
+
         showLoading();
     };
 
-    var complete = function(form){
-        enableFields(form);
+    /**
+     * On an AJAX completion, re-enable fields and hide loading indicator
+     * @param args
+     */
+    var complete = function(args){
+        var defaults = {
+            form: null,
+            fieldsSelector: null
+        };
+        args = $.extend({}, defaults, args);
+
+        if(args.form != null){
+            args.form.find('input, button').prop('disabled', false);
+        }
+
+        if(args.fieldsSelector != null){
+            $(args.fieldsSelector).prop('disabled', false);
+        }
+
         hideLoading();
     };
 
+    /**
+     * Handle AJAX error response with an alert
+     * @param errorThrown
+     */
     var error = function(errorThrown){
         $('#twpm-alert-error').text('An error has occurred.  Please contact support.  Error details: "' + errorThrown + '"').fadeIn();
     };
 
-    var ajaxForm = function(form, args){
+    /**
+     * Get settings object to use in AJAX call
+     * @param args
+     * @returns {{url, type: string, beforeSubmit: beforeSubmit, clearForm: boolean, dataType: string, complete: complete, error: error, success: success}}
+     */
+    var getAjaxSettings = function(args){
         var defaults = {
-            beforeSubmit: function(arr, f, options){},
+            action: null,
+            nonce: null,
+            data: null,
+            form: null,
+            fieldsSelector: null,
+            beforeSubmit: function(arr, f, options){
+                return true;
+            },
             clearForm: false,
             complete: function(xhr, textStatus){},
             error: function(xhr, textStatus, errorThrown){},
             success: function(response){}
         };
-        args = $.extend(defaults, args);
+        args = $.extend({}, defaults, args);
 
-        form.prepend('<div id="twpm-alert-success" class="twpm-alert twpm-alert-success"></div><div id="twpm-alert-error" class="twpm-alert twpm-alert-error"></div>');
-
-        form.ajaxForm({
+        var settings = {
             url: ajaxurl,
             type: 'POST',
-            beforeSubmit: function(arr, f, options){
-                beforeSubmit(form);
-                args.beforeSubmit(arr, f, options);
+            beforeSubmit: function (arr, f, options) {
+                beforeSubmit({form: args.form, fieldsSelector: args.fieldsSelector});
+                if(args.beforeSubmit(arr, f, options) === false){
+                    complete({form: args.form, fieldsSelector: args.fieldsSelector});
+                    return false;
+                };
             },
             clearForm: args.clearForm, // clear form after posting
             dataType: 'json',
-            complete: function(xhr, textStatus){
-                complete(form);
+            complete: function (xhr, textStatus) {
+                complete({form: args.form, fieldsSelector: args.fieldsSelector});
                 args.complete(xhr, textStatus);
             },
-            error: function(xhr, textStatus, errorThrown){
+            error: function (xhr, textStatus, errorThrown) {
                 error(errorThrown);
                 args.error(xhr, textStatus, errorThrown);
             },
-            success: function(response ){
+            success: function (response) {
                 success(response);
                 args.success(response);
             }
-        });
+        };
+
+        // Use data if provided, else initialize empty object
+        if(args.data != null){
+            if(typeof args.data === 'function'){
+                settings.data = args.data();
+            } else {
+                settings.data = args.data;
+            }
+        } else {
+            settings.data = {};
+        }
+
+        // Override action if provided
+        if(args.action != null){
+            settings.data.action = args.action;
+        }
+
+        // Override nonce if provided
+        if(args.nonce != null){
+            settings.data.nonce = args.nonce;
+        }
+
+        return settings;
     };
+
+    /**
+     * AJAXify a form element
+     * @param form
+     * @param args
+     */
+    var ajaxForm = function(form, args){
+        args.form = form;
+        var settings = getAjaxSettings(args);
+
+        form.prepend(alertContainer);
+
+        form.ajaxForm(settings);
+    };
+
+    /**
+     * AJAXify a button element
+     * @param button
+     * @param args
+     */
+    var ajaxButton = function(button, args){
+        button.before(alertContainer);
+
+        button.click(function(e){
+            e.preventDefault();
+            var settings = getAjaxSettings(args);
+            beforeSubmit({fieldsSelector: args.fieldsSelector});
+            if(settings.beforeSubmit(settings.data, null, settings) === false){
+                complete({fieldsSelector: args.fieldsSelector});
+                return;
+            }
+            $.ajax(settings);
+        });
+
+    }
 
 
     var ajax = {
@@ -116,10 +242,12 @@ jQuery(document).ready(function($) {
         hideLoading: hideLoading,
         success: success,
         genericError: genericError,
-        ajaxForm: ajaxForm
+        ajaxForm: ajaxForm,
+        ajaxButton: ajaxButton
     };
 
-    Trestian_WPM = {
+
+    TrestianCore = {
         ajax: ajax
     };
 });

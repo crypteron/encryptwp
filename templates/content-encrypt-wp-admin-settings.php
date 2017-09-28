@@ -14,8 +14,22 @@
 		// output setting sections and their fields
 		// (sections are registered for "wporg", each field is registered to a specific section)
 		do_settings_sections( $option_group );
-		// output save settings button
-		submit_button( 'Save Settings' );
+
 		?>
+		<table class="form-table">
+			<tbody>
+			<tr class="encrypt-wp_settings_row">
+				<th scope="row"><label for="strict_mode">Secure Database</label></th>
+				<td>
+					<button class="btn btn-warning" id="encrypt-all">ENCRYPT ALL FIELDS</button>
+					<p class="description">
+						This will encrypt the data in all of the sensitive fields in your database. This cannot be undone. Be sure to take a database backup first.
+					</p>
+				</td>
+			</tr>
+			</tbody>
+		</table>
 	</form>
+
+	<?php submit_button( 'Save Settings' ); ?>
 </div>

@@ -7,7 +7,15 @@ class EncryptWP_User_Email {
 	 */
 	protected $options;
 
+	/**
+	 * @var EncryptWP_Error_Manager
+	 */
 	protected $error_manager;
+
+	/**
+	 * @var EncryptWP_Email_Search_Manager
+	 */
+	protected $email_search_manager;
 
 	/**
 	 * EncryptWP_UserEmail constructor.
@@ -15,9 +23,10 @@ class EncryptWP_User_Email {
 	 * @param EncryptWP_Options_Manager $options
 	 * @param EncryptWP_Error_Manager $error_manager
 	 */
-	public function __construct(EncryptWP_Options_Manager $options, EncryptWP_Error_Manager $error_manager) {
+	public function __construct(EncryptWP_Options_Manager $options, EncryptWP_Error_Manager $error_manager, EncryptWP_Email_Search_Manager $email_search_manager) {
 		$this->options = $options;
 		$this->error_manager = $error_manager;
+		$this->email_search_manager = $email_search_manager;
 	}
 
 	/**
@@ -40,6 +49,8 @@ class EncryptWP_User_Email {
 
 		// Decrypt email when fetched for editing
 		add_filter('edit_user_email', array($this, 'decrypt_email'), 1, 2);
+
+		add_action('pre_user_query', array($this, 'search_email'), 100, 1);
 	}
 
 	/**
@@ -100,6 +111,51 @@ class EncryptWP_User_Email {
 
 	public function disable_email_change_notification($send, $user, $userdata){
 		return false;
+	}
+
+	/**
+	 * @param $query WP_User_Query
+	 */
+	public function search_email($query){
+		$search = $query->get('search');
+		if (!$search) {
+			return;
+		}
+
+		$query = $this->email_search_manager->update_query_for_email_search($query);
+	}
+
+	/**
+	 * Copied from WP_User Query. Used to find the search SQL to replace and inject with email search string. Hackish. Ideally there would be
+	 * a filter for search sql. Oh well.
+	 *
+	 * @access protected
+     *
+	 * @global wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param string $string
+	 * @param array  $cols
+	 * @param bool   $wild   Whether to allow wildcard searches. Default is false for Network Admin, true for single site.
+	 *                       Single site allows leading and trailing wildcards, Network Admin only trailing.
+	 * @return string
+	 */
+	protected function get_search_sql( $string, $cols, $wild = false ) {
+		global $wpdb;
+
+		$searches = array();
+		$leading_wild = ( 'leading' == $wild || 'both' == $wild ) ? '%' : '';
+		$trailing_wild = ( 'trailing' == $wild || 'both' == $wild ) ? '%' : '';
+		$like = $leading_wild . $wpdb->esc_like( $string ) . $trailing_wild;
+
+		foreach ( $cols as $col ) {
+			if ( 'ID' == $col ) {
+				$searches[] = $wpdb->prepare( "$col = %s", $string );
+			} else {
+				$searches[] = $wpdb->prepare( "$col LIKE %s", $like );
+			}
+		}
+
+		return ' AND (' . implode(' OR ', $searches) . ')';
 	}
 
 

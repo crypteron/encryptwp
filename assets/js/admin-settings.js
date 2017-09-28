@@ -10,4 +10,12 @@ jQuery(document).ready(function($) {
         });
     }
 
+    TrestianCore.ajax.ajaxButton($('#encrypt-all'), {
+        action: ENCRYPT_WP_ADMIN.encrypt_all_action,
+        nonce: ENCRYPT_WP_ADMIN.encrypt_all_nonce,
+        beforeSubmit: function(data, form, options){
+            return window.confirm("This action cannot be undone. Please ensure you have taken a backup of your database before proceeding.")
+        }
+    });
+
 });

@@ -5,3 +5,25 @@
 .ewp-encrypt-email-unsupported {
 	display: none;
 }
+
+.ewp-btn-warning {
+	color: #111;
+	background-color: #ffc107;
+	border-color: #ffc107;
+}
+
+.ewp-btn-warning:hover {
+	color: #111;
+	background-color: #e0a800;
+	border-color: #d39e00;
+}
+
+.ewp-btn-warning:active{
+	background-color: #e0a800;
+	background-image: none;
+	border-color: #d39e00;
+}
+
+.ewp-btn-warning.focus, .ewp-btn-warning:focus {
+	box-shadow: 0 0 0 3px rgba(255,193,7,.5);
+}
