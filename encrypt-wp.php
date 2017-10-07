@@ -9,7 +9,7 @@
  * Plugin Name:       EncryptWP
  * Plugin URI:        https://bitbucket.org/Crypteron/cipherwp
  * Description:       Adds military grade encryption and tamper protection to WordPress
- * Version:           1.0.8
+ * Version:           1.0.9
  * Author:            Crypteron
  * Author URI:        https://crypteron.com
  * License:           GPL-3.0+

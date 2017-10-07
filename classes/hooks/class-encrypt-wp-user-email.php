@@ -123,40 +123,6 @@ class EncryptWP_User_Email {
 		}
 
 		$query = $this->email_search_manager->update_query_for_email_search($query);
+		return;
 	}
-
-	/**
-	 * Copied from WP_User Query. Used to find the search SQL to replace and inject with email search string. Hackish. Ideally there would be
-	 * a filter for search sql. Oh well.
-	 *
-	 * @access protected
-     *
-	 * @global wpdb $wpdb WordPress database abstraction object.
-	 *
-	 * @param string $string
-	 * @param array  $cols
-	 * @param bool   $wild   Whether to allow wildcard searches. Default is false for Network Admin, true for single site.
-	 *                       Single site allows leading and trailing wildcards, Network Admin only trailing.
-	 * @return string
-	 */
-	protected function get_search_sql( $string, $cols, $wild = false ) {
-		global $wpdb;
-
-		$searches = array();
-		$leading_wild = ( 'leading' == $wild || 'both' == $wild ) ? '%' : '';
-		$trailing_wild = ( 'trailing' == $wild || 'both' == $wild ) ? '%' : '';
-		$like = $leading_wild . $wpdb->esc_like( $string ) . $trailing_wild;
-
-		foreach ( $cols as $col ) {
-			if ( 'ID' == $col ) {
-				$searches[] = $wpdb->prepare( "$col = %s", $string );
-			} else {
-				$searches[] = $wpdb->prepare( "$col LIKE %s", $like );
-			}
-		}
-
-		return ' AND (' . implode(' OR ', $searches) . ')';
-	}
-
-
 }
