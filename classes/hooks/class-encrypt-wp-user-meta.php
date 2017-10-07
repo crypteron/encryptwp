@@ -32,7 +32,6 @@ class EncryptWP_User_Meta{
 	public static $secure_meta_keys = array(
 		'billing_phone' => false,
 		'phone_number' => false,
-		'pmpro_bphone' => false,
 		'first_name' => false,
 		'last_name' => true,
 		'billing_email' => true,
@@ -47,7 +46,12 @@ class EncryptWP_User_Meta{
 		'nickname' => false,
 		'birthday' => true,
 		EncryptWP_Constants::EMAIL_META_KEY => true,
-		'ewp_test_array' => false
+		"pmpro_bfirstname" => false,
+		"pmpro_blastname" => true,
+		"pmpro_baddress1" => false,
+		"pmpro_baddress2" => false,
+		"pmpro_bphone" => false,
+		"pmpro_bemail" => true
 	);
 
 	/**
