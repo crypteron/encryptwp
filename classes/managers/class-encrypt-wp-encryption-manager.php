@@ -82,7 +82,7 @@ class EncryptWP_Encryption_Manager {
 	 *
 	 * @return bool|string
 	 */
-	public function decrypt($encrypted_record, $aad, $context = null, $field = null){
+	public function decrypt($encrypted_record, $aad = null, $context = null, $field = null){
 		try {
 			return $this->encryptor->decrypt( $encrypted_record, $aad );
 		}
