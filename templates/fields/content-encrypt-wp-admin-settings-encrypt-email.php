@@ -68,7 +68,7 @@
 	<label for="encrypt_email_on"><?php esc_html_e('On', $prefix); ?></label>
 
 	<p class="description">
-		<?php esc_html_e( 'This feature is compatible with all of your plugins but may ru n.', $prefix ); ?>
+		<?php esc_html_e( 'Should EncryptWP automatically encrypt user email addresses?', $prefix ); ?>
 	</p>
 </div>
 

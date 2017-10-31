@@ -10,6 +10,11 @@ class EncryptWP_User_Fields {
 	 */
 	protected $encryption_manager;
 
+	/**
+	 * @var EncryptWP_Options_Manager
+	 */
+	protected $options;
+
 	// TODO: store these fields in database and configure with settings
 	/**
 	 * @var array - User fields to encrypt and whether or not they are searchable. NOTE: user_login and user_nicename are
@@ -28,8 +33,9 @@ class EncryptWP_User_Fields {
 	 * @param Encryptor $encryptor
 	 * @param Plugin_Settings $settings
 	 */
-	public function __construct(EncryptWP_Encryption_Manager $encryption_manager) {
+	public function __construct(EncryptWP_Encryption_Manager $encryption_manager, EncryptWP_Options_Manager $options) {
 		$this->encryption_manager   = $encryption_manager;
+		$this->options = $options;
 	}
 
 	public function load_hooks(){
@@ -58,7 +64,7 @@ class EncryptWP_User_Fields {
 	 */
 	private function save_field_internal($value, $searchable = false){
 		// If value is already encrypted, do nothing
-		if( $this->encryption_manager->is_encrypted($value) !== false){
+		if( !$this->options->encrypt_enabled || $this->encryption_manager->is_encrypted($value) !== false){
 			return $value;
 		}
 

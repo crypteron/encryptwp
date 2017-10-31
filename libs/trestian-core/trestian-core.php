@@ -67,6 +67,7 @@ class TrestianCore {
 	public static function setup($plugin_name, $version, $plugin_url, $plugin_path, $prefix, $custom_fields = 'ACF', \Dice\Dice $dice = null, $options = array()){
 		// Register script handles to be enqueued later
 		wp_register_script('TrestianCore', plugin_dir_url(__FILE__) . 'assets/js/trestian-core.js', array('jquery', 'jquery-form'), self::VERSION);
+		wp_localize_script('TrestianCore', 'TrestianCoreArgs', array('ajaxurl' => admin_url('admin-ajax.php')));
 		wp_register_style('TrestianCore', plugin_dir_url(__FILE__) . 'assets/css/trestian-core.css', self::VERSION);
 
 

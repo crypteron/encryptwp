@@ -32,7 +32,12 @@ class EncryptWP_Admin_Settings {
 	 */
 	protected $bulk_encrypt_manager;
 
+	/**
+	 * @var string
+	 */
 	const ENCRYPT_ALL_ACTION = 'encryptwp_encrypt_all';
+
+	const DECRYPT_ALL_ACTION = 'encryptwp_decrypt_all';
 
 	/**
 	 * EncryptWP_Admin_Settings constructor.
@@ -58,7 +63,7 @@ class EncryptWP_Admin_Settings {
 
 	public function load_hooks(){
 		add_action('admin_menu', array($this, 'admin_menu'));
-		add_action('admin_init', array($this, 'register_settings'));
+		// add_action('admin_init', array($this, 'register_settings'));
 		add_action('update_option_' . EncryptWP_Constants::OPTION_NAME, array($this, 'refresh_options'), 10, 3);
 		add_action('admin_enqueue_scripts', array($this, 'load_styles'));
 		add_action('admin_enqueue_scripts', array($this, 'load_scripts'));
@@ -80,7 +85,7 @@ class EncryptWP_Admin_Settings {
 	 */
 	public function admin_menu(){
 		add_options_page(
-			'EncryptWP Settings',
+			'Crypteron EncryptWP Settings',
 			'EncryptWP',
 			'manage_options',
 			EncryptWP_Constants::OPTION_GROUP,
@@ -101,7 +106,8 @@ class EncryptWP_Admin_Settings {
 
 		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings.php', array(
 			'prefix' => $this->settings->get_prefix(),
-			'option_group' => EncryptWP_Constants::OPTION_GROUP
+			'option_group' => EncryptWP_Constants::OPTION_GROUP,
+			'options' => $this->options
 		));
 	}
 
@@ -120,6 +126,34 @@ class EncryptWP_Admin_Settings {
 
 		// Register a field in the main section for strict mode
 		add_settings_field(
+			'encrypt_enabled',
+			__( 'Encrypt User Fields', $this->settings->get_prefix() ),
+			array($this, 'display_encrypt_enabled'),
+			EncryptWP_Constants::OPTION_GROUP,
+			$section_main,
+			[
+				'label_for' => 'encrypt_enabled',
+				'class' => $this->settings->get_prefix() . '_settings_row'
+			]
+		);
+
+
+		// Register a field in the main section for strict mode
+		add_settings_field(
+			'encrypt_email',
+			// use $args' label_for to populate the id inside the callback
+			__( 'Encrypt User Email', $this->settings->get_prefix() ),
+			array($this, 'display_encrypt_email'),
+			EncryptWP_Constants::OPTION_GROUP,
+			$section_main,
+			[
+				'label_for' => 'encrypt_email',
+				'class' => $this->settings->get_prefix() . '_settings_row'
+			]
+		);
+
+		// Register a field in the main section for strict mode
+		add_settings_field(
 			'strict_mode',
 			// use $args' label_for to populate the id inside the callback
 			__( 'Strict Mode', $this->settings->get_prefix() ),
@@ -131,26 +165,20 @@ class EncryptWP_Admin_Settings {
 				'class' => $this->settings->get_prefix() . '_settings_row'
 			]
 		);
-
-		// Register a field in the main section for strict mode
-		add_settings_field(
-			'encrypt_email',
-			// use $args' label_for to populate the id inside the callback
-			__( 'Encrypt Email', $this->settings->get_prefix() ),
-			array($this, 'display_encrypt_email'),
-			EncryptWP_Constants::OPTION_GROUP,
-			$section_main,
-			[
-				'label_for' => 'encrypt_email',
-				'class' => $this->settings->get_prefix() . '_settings_row'
-			]
-		);
 	}
 
 	public function display_main_section($args){
 		// Any content that goes above the section goes here
 	}
 
+	public function display_encrypt_enabled( $args ) {
+		$this->template_manager->load_template('templates/fields/content-encrypt-wp-admin-settings-encrypt-enabled.php', array(
+			'options' => $this->options,
+			'args' => $args,
+			'option_name' => EncryptWP_Constants::OPTION_NAME,
+			'prefix' => $this->settings->get_prefix()
+		));
+	}
 
 	public function display_strict_mode( $args ) {
 		$this->template_manager->load_template('templates/fields/content-encrypt-wp-admin-settings-strict-mode.php', array(
@@ -174,9 +202,11 @@ class EncryptWP_Admin_Settings {
 		if($hook != 'settings_page_encryptwp'){
 			return;
 		}
+		wp_enqueue_style($this->settings->get_prefix() . '_redux', $this->settings->get_plugin_url() . '/assets/css/redux-admin.css', array(), $this->settings->get_version());
 		wp_enqueue_style($this->settings->get_prefix() . '_admin_settings', $this->settings->get_plugin_url() . '/assets/css/admin-settings.css', array('TrestianCore'), $this->settings->get_version());
-
 		wp_enqueue_style($this->settings->get_prefix() . '_bootstrap', $this->settings->get_plugin_url() . '/assets/css/bootstrap-slim.css', array(), $this->settings->get_version());
+		wp_enqueue_style($this->settings->get_prefix() . '_jquery_ui', $this->settings->get_plugin_url() . 'assets/css/jquery-ui-1.10.0.custom.css', array(), $this->settings->get_version());
+
 	}
 
 	public function load_scripts($hook){
@@ -184,13 +214,17 @@ class EncryptWP_Admin_Settings {
 			return;
 		}
 
-		wp_register_script($this->settings->get_prefix() . '_admin_settings', $this->settings->get_plugin_url() . '/assets/js/admin-settings.js', array('jquery', 'TrestianCore'), $this->settings->get_version());
+		wp_register_script($this->settings->get_prefix() . '_admin_settings', $this->settings->get_plugin_url() . '/assets/js/admin-settings.js', array('jquery', 'TrestianCore', 'jquery-ui-core'), $this->settings->get_version());
 		$path = get_admin_url() . '?' . EncryptWP_Email_Pluggable_Manager::EMAIL_PLUGGABLE . '=1';
 		wp_localize_script($this->settings->get_prefix() . '_admin_settings', 'ENCRYPT_WP_ADMIN', array(
+			'encrypt_enabled' => $this->options->encrypt_enabled,
 			'encrypt_email_enabled'=>$this->options->encrypt_email,
 			'encrypt_email_path'=>$path,
 			'encrypt_all_nonce' => wp_create_nonce(self::ENCRYPT_ALL_ACTION),
-			'encrypt_all_action' => self::ENCRYPT_ALL_ACTION
+			'encrypt_all_action' => self::ENCRYPT_ALL_ACTION,
+			'decrypt_all_nonce' => wp_create_nonce(self::DECRYPT_ALL_ACTION),
+			'decrypt_all_action' => self::DECRYPT_ALL_ACTION,
+
 			));
 		wp_enqueue_script($this->settings->get_prefix() . '_admin_settings');
 	}
@@ -220,7 +254,32 @@ class EncryptWP_Admin_Settings {
 		} catch(EncryptWP_Exception $e){
 			$this->ajax_manager->return_error($e->getMessage());
 		}
+	}
 
-		$this->ajax_manager->return_success('TODO!');
+	public function decrypt_all(){
+		$this->ajax_manager->validate_nonce();
+		try {
+			$bulk_response = $this->bulk_encrypt_manager->decrypt_all_user();
+			$result = '';
+
+			if(!empty($bulk_response->users_error)){
+				$result .= '<strong>The following users failed to decrypt:</strong><br/>';
+				$result .= implode('<br/>', $bulk_response->users_error);
+			}
+
+			if(!empty($bulk_response->users_error) && !empty($bulk_response->users_success)){
+				$result .= '<br/>';
+			}
+			if(!empty($bulk_response->users_success)){
+				$result .= '<strong>The following users were successfully decrypted:</strong><br/>';
+				$result .= implode('<br/>', $bulk_response->users_success);
+			}
+
+
+			$this->ajax_manager->return_success($result);
+
+		} catch(EncryptWP_Exception $e){
+			$this->ajax_manager->return_error($e->getMessage());
+		}
 	}
 }

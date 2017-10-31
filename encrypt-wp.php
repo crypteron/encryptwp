@@ -117,6 +117,7 @@ class EncryptWP{
 		// Libraries
 		require_once $this->plugin_path . 'libs/cipher-core/cipher-core.php';
 
+
 		// Load V1 of Trestian Core if not already loaded
 		if(!class_exists('\TrestianCore\v1\TrestianCore')){
 			require_once $this->plugin_path  . 'libs/trestian-core/trestian-core.php';
@@ -137,6 +138,7 @@ class EncryptWP{
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-constants.php';
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-error.php';
 		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-bulk-user-result.php';
+		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-field-option.php';
 
 		// Hooks
 		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-hooks.php';

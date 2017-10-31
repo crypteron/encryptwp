@@ -13,6 +13,11 @@ class EncryptWP_User_Meta{
 	protected $meta_query_manager;
 
 	/**
+	 * @var EncryptWP_Options_Manager
+	 */
+	protected $options;
+
+	/**
 	 * Which priority to add and remove meta filters for reading
 	 * @var int
 	 */
@@ -59,20 +64,23 @@ class EncryptWP_User_Meta{
 	 *
 	 * @param EncryptWP_Encryption_Manager $encryptor
 	 */
-	public function __construct(EncryptWP_Encryption_Manager $encryptor, EncryptWP_Meta_Query_Manager $meta_query_manager) {
+	public function __construct(EncryptWP_Encryption_Manager $encryptor, EncryptWP_Meta_Query_Manager $meta_query_manager, EncryptWP_Options_Manager $options) {
 		$this->encryption_manager = $encryptor;
 		$this->meta_query_manager = $meta_query_manager;
+		$this->options = $options;
 	}
 
 	/**
 	 * Register hooks
 	 */
 	public function load_hooks(){
+
 		// Intercept calls to update user meta data
 		$this->register_update_user_meta_filter();
 
 		// Intercept calls to add user meta data
 		$this->register_add_user_meta_filter();
+
 
 		// Intercept calls to get user metadata
 		$this->register_get_user_meta_filter();
@@ -91,8 +99,8 @@ class EncryptWP_User_Meta{
 	 * @return bool
 	 */
 	public function update_meta_value($null, $user_id, $meta_key, $meta_value, $prev_value){
-		// Disregard non-secure fields
-		if(!isset(self::$secure_meta_keys[$meta_key])){
+		// Disregard if encryption disabled or non-secure fields
+		if(!$this->options->encrypt_enabled || !isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
 		}
 
@@ -134,8 +142,8 @@ class EncryptWP_User_Meta{
 	 * @return bool
 	 */
 	public function add_meta_value($null, $user_id, $meta_key, $meta_value, $unique){
-		// Disregard non-secure fields
-		if(!isset(self::$secure_meta_keys[$meta_key])){
+		// Disregard if encryption disabled or non-secure fields
+		if(!$this->options->encrypt_enabled || !isset(self::$secure_meta_keys[$meta_key])){
 			return $null;
 		}
 

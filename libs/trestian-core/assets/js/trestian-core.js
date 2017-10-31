@@ -148,7 +148,7 @@ jQuery(document).ready(function($) {
         args = $.extend({}, defaults, args);
 
         var settings = {
-            url: ajaxurl,
+            url: TrestianCoreArgs.ajaxurl,
             type: 'POST',
             beforeSubmit: function (arr, f, options) {
                 beforeSubmit({form: args.form, fieldsSelector: args.fieldsSelector});
@@ -203,6 +203,8 @@ jQuery(document).ready(function($) {
      * @param args
      */
     var ajaxForm = function(form, args){
+        args = args || {};
+
         args.form = form;
         var settings = getAjaxSettings(args);
 

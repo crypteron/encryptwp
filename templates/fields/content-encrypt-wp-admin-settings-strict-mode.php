@@ -14,5 +14,5 @@
 <label for="strict_mode_on"><?php esc_html_e('On', $prefix); ?></label>
 
 <p class="description">
-	<?php esc_html_e( 'Strict mode will trigger an error if unencrypted text is found in a secure property. This is required to prevent tamper protection. Only enable after you\'ve encrypted your whole database', $prefix ); ?>
+	<?php esc_html_e( 'Should EncryptWP trigger an error if unencrypted text is found in a secure property? This is required to prevent tamper protection. Only enable after you\'ve encrypted your whole database below.', $prefix ); ?>
 </p>

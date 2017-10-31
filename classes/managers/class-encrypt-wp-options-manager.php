@@ -2,6 +2,11 @@
 class EncryptWP_Options_Manager{
 
 	/**
+	 * @var bool - Whether EncryptWP should encrypt data. Encrypted data will decrypt by default.
+	 */
+	public $encrypt_enabled;
+
+	/**
 	 * @var bool - Whether an error should occur when clear text is found in a secure field
 	 */
 	public $strict_mode;
@@ -39,38 +44,40 @@ class EncryptWP_Options_Manager{
 	public function set_from_option_array($options){
 		// Defaults
 		$options = wp_parse_args($options, array(
+			'encrypt_enabled' => true,
 			'strict_mode' => false,
 			'frontend_error_placeholder' => 'HIDDEN',
 			'encrypt_email' => true,
 			'incompatible_plugins' => array(),
 			'admin_notify' => array('yaron@crypteron.com', 'daniel@hifoo.com'),
 			'user_meta_fields' => array(
-				'billing_phone' => 0,
-				'phone_number' => false,
-				'pmpro_bphone' => false,
-				'first_name' => false,
-				'last_name' => true,
-				'billing_email' => true,
-				'billing_first_name' => false,
-				'billing_last_name' => true,
-				'billing_address_1' => false,
-				'billing_address_2' => false,
-				'shipping_address_1' => false,
-				'shipping_address_2' => false,
-				'shipping_first_name' => false,
-				'shipping_last_name' => true,
-				'nickname' => false,
-				'birthday' => true,
-				EncryptWP_Constants::EMAIL_META_KEY => true
+				'billing_phone' => EncryptWP_Field_Option::ENCRYPTED,
+				'phone_number' => EncryptWP_Field_Option::ENCRYPTED,
+				'pmpro_bphone' => EncryptWP_Field_Option::ENCRYPTED,
+				'first_name' => EncryptWP_Field_Option::ENCRYPTED,
+				'last_name' => EncryptWP_Field_Option::ENCRYPTED_SEARCHABLE,
+				'billing_email' => EncryptWP_Field_Option::ENCRYPTED_SEARCHABLE,
+				'billing_first_name' => EncryptWP_Field_Option::ENCRYPTED,
+				'billing_last_name' => EncryptWP_Field_Option::ENCRYPTED,
+				'billing_address_1' => EncryptWP_Field_Option::ENCRYPTED,
+				'billing_address_2' => EncryptWP_Field_Option::ENCRYPTED,
+				'shipping_address_1' => EncryptWP_Field_Option::ENCRYPTED,
+				'shipping_address_2' => EncryptWP_Field_Option::ENCRYPTED,
+				'shipping_first_name' => EncryptWP_Field_Option::ENCRYPTED,
+				'shipping_last_name' => EncryptWP_Field_Option::ENCRYPTED_SEARCHABLE,
+				'nickname' => EncryptWP_Field_Option::ENCRYPTED,
+				'birthday' => EncryptWP_Field_Option::ENCRYPTED_SEARCHABLE,
+				EncryptWP_Constants::EMAIL_META_KEY => EncryptWP_Field_Option::ENCRYPTED_SEARCHABLE
 			),
 			'user_fields' => array(
 				'display_name' => false
 			)
 		));
 
+		$this->encrypt_enabled = (bool)$options['encrypt_enabled'];
 		$this->strict_mode = (bool)$options['strict_mode'];
 		$this->frontend_error_placeholder = $options['frontend_error_placeholder'];
-		$this->user_meta_fields = $this->convert_boolean($options['user_meta_fields']);
+		$this->user_meta_fields = $options['user_meta_fields']; //$this->convert_boolean($options['user_meta_fields']);
 		$this->user_fields = $this->convert_boolean($options['user_fields']);
 		$this->encrypt_email = (bool)$options['encrypt_email'];
 		$this->incompatible_plugins = $options['incompatible_plugins'];
@@ -79,6 +86,7 @@ class EncryptWP_Options_Manager{
 
 	public function get_option_array(){
 		return array(
+			'encrypt_enabled' => $this->encrypt_enabled ? '1' : '0',
 			'strict_mode' => $this->strict_mode ? '1' : '0',
 			'frontend_error_placeholder' => $this->frontend_error_placeholder,
 			'user_meta_fields' => $this->convert_from_boolean($this->user_meta_fields),

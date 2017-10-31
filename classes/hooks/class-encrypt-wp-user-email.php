@@ -33,11 +33,6 @@ class EncryptWP_User_Email {
 	 * Register hooks
 	 */
 	public function load_hooks(){
-		// Don't load hooks if email encryption is turned off. TODO: move setting to database
-		if(!$this->options->encrypt_email){
-			return;
-		}
-
 		// Secure email after profile is updated
 		$this->register_profile_update_hook();
 
@@ -50,6 +45,7 @@ class EncryptWP_User_Email {
 		// Decrypt email when fetched for editing
 		add_filter('edit_user_email', array($this, 'decrypt_email'), 1, 2);
 
+		// Enable fuzzy searches containing an email address
 		add_action('pre_user_query', array($this, 'search_email'), 100, 1);
 	}
 
@@ -58,6 +54,11 @@ class EncryptWP_User_Email {
 	 * @param int $user_id
 	 */
 	public function encrypt_email($user_id){
+		// Don't do anything if email encryption is turned off.
+		if(!$this->options->encrypt_email){
+			return;
+		}
+
 		// Fetch user email and convert to lowercase
 		$user = get_user_by('id', $user_id);
 		$user_email = strtolower($user->user_email);
@@ -117,6 +118,10 @@ class EncryptWP_User_Email {
 	 * @param $query WP_User_Query
 	 */
 	public function search_email($query){
+		// If email encryption is turned off, do nothing
+		if(!$this->options->encrypt_email){
+			return;
+		}
 		$search = $query->get('search');
 		if (!$search) {
 			return;
