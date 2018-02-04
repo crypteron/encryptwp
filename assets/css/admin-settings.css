@@ -33,6 +33,9 @@
   border-radius: 0;
   margin-right: -0.3em;
 }
+.ewp-field_encrypt_enabled-0 {
+  display: none;
+}
 .ewp-settings .ewp-field {
   display: table-row;
 }

@@ -249,7 +249,7 @@ class Encryptor {
 	 */
 	public function try_decrypt($text, $aad = null, $base64 = true){
 		try{
-			$clear_text = $this->decrypt_internal($text, $aad, $base64);
+			$clear_text = @$this->decrypt_internal($text, $aad, $base64);
 
 		} catch(\AvroException $e){
 			return false;

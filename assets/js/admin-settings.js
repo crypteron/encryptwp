@@ -13,8 +13,16 @@ jQuery.fn.htmlClean = function() {
 }
 
 jQuery(document).ready(function($) {
+    $('input[name="encrypt_enabled"]').change(function(){
+       var enabled = $('input[name="encrypt_enabled"]:checked').val();
+       if(enabled == '1'){
+           $('.ewp-field_encrypt_enabled').fadeIn();
+       } else {
+           $('.ewp-field_encrypt_enabled').fadeOut();
+       }
+    });
 
-    if(ENCRYPT_WP_ADMIN.encrypt_email_enabled == false){
+    if(ENCRYPT_WP_ADMIN.options.encrypt_email== false){
         $.get(ENCRYPT_WP_ADMIN.encrypt_email_path, function(data){
             $('.ewp-loading').hide();
             if(data == 0){
@@ -30,7 +38,7 @@ jQuery(document).ready(function($) {
     });
 
     $('#encrypt_email_off').click(function(e){
-        if(ENCRYPT_WP_ADMIN.encrypt_email_enabled){
+        if(ENCRYPT_WP_ADMIN.options.encrypt_email){
          if(!window.confirm("Disabling email encryption will also decrypt all of your encrypted email addresses. Are you sure you want to continue?")){
              e.preventDefault();
          }
@@ -38,7 +46,7 @@ jQuery(document).ready(function($) {
     });
 
     $('#encrypt_enabled_off').click(function(e){
-        if(ENCRYPT_WP_ADMIN.encrypt_email_enabled){
+        if(ENCRYPT_WP_ADMIN.options.encrypt_email){
             window.alert('NOTE: Data that is already encrypted will remain encrypted. To decrypt all data click the "Decrypt All Fields" button at the bottom of this page');
         }
     });

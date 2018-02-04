@@ -124,29 +124,33 @@ class EncryptWP{
 		}
 
 		// Managers
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-email-pluggable-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-meta-query-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-options-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-encryption-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-error-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-bulk-encrypt-manager.php';
-		require_once $this->plugin_path . 'classes/managers/class-encrypt-wp-email-search-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-email-pluggable-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-meta-query-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-options-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-encryption-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-error-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-bulk-encrypt-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-email-search-manager.php';
 
+		// Config
+		require_once $this->plugin_path . 'config/class-encrypt-wp-constants.php';
+		require_once $this->plugin_path . 'config/class-encrypt-wp-defaults.php';
 
 		// Models
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-exception.php';
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-constants.php';
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-error.php';
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-bulk-user-result.php';
-		require_once $this->plugin_path . 'classes/models/class-encrypt-wp-field-option.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-exception.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-error.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-bulk-user-result.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-field-state.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-options.php';
+		require_once $this->plugin_path . 'models/class-encrypt-wp-field.php';
 
 		// Hooks
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-hooks.php';
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-shortcodes.php';
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-meta.php';
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-fields.php';
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-user-email.php';
-		require_once $this->plugin_path . 'classes/hooks/class-encrypt-wp-admin-settings.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-hooks.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-shortcodes.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-user-meta.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-user-fields.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-user-email.php';
+		require_once $this->plugin_path . 'hooks/class-encrypt-wp-admin-settings.php';
 
 	}
 
@@ -161,9 +165,11 @@ class EncryptWP{
 
 		// Fetch the plugin options
 		/**
-		 * @var $options EncryptWP_Options_Manager
+		 * @var $options_manager EncryptWP_Options_Manager
 		 */
-		$options = $dice->create('EncryptWP_Options_Manager');
+		$options_manager = $dice->create('EncryptWP_Options_Manager');
+		$options = $options_manager->get_options();
+
 
 		// Enable or disable strict mode.
 		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[$options->strict_mode]]);
@@ -218,4 +224,4 @@ function run_encrypt_wp(){
 }
 
 // Run after the latest version of Trestian WP Managers has been loaded
-add_action('plugins_loaded', 'run_encrypt_wp');
+ add_action('plugins_loaded', 'run_encrypt_wp');

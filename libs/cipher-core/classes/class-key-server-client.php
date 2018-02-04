@@ -2,6 +2,7 @@
 namespace CipherCore\v1;
 
 class Key_Server_Client implements IKeyServerClient {
+
 	/**
 	 * @param ReadKeyRequest $key_request
 	 *

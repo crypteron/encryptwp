@@ -1,7 +1,7 @@
 <?php
 /**
  * @var $option_name string
- * @var $options EncryptWP_Options_Manager
+ * @var $options EncryptWP_Options
  * @var $args array
  * @var $prefix string
  */
