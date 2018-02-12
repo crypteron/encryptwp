@@ -76,7 +76,7 @@ class EncryptWP_Admin_Settings {
 	 * @param $option
 	 */
 	public function refresh_options($old_value, $value, $option){
-		//$this->options_manager->load_options();
+		//$this->options_manager->refresh_options();
 	}
 
 	/**

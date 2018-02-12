@@ -9,73 +9,90 @@ class EncryptWP_Defaults {
 	];
 
 	private static $USER_META_FIELDS = [
-		'billing_phone' => [
+		[
 			'label' => 'Billing Phone',
-			'state'=>EncryptWP_Field_State::ENCRYPTED
+			'state'=>EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'billing_phone'
 		],
-		'phone_number' => [
+		[
 			'label' => 'Phone Number',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'phone_number'
 		],
-		'pmpro_bphone' => [
+		[
 			'label' => 'Paid Memberships Pro - Business Phone',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'pmpro_bphone'
 		],
-		'first_name' => [
+		[
 			'label' => 'First Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'first_name'
 		],
-		'last_name' => [
+		[
 			'label' => 'Last Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE
+			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE,
+			'slug'=>'last_name'
 		],
-		'nickname' => [
+		[
 			'label' => 'Nickname',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'nickname'
 		],
-		'billing_email' => [
+		[
 			'label' => 'Billing Email',
-			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE
+			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE,
+			'slug'=>'billing_email'
 		],
-		'billing_first_name' => [
+		[
 			'label' => 'Billing First Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'billing_first_name'
 		],
-		'billing_last_name' => [
+		[
 			'label' => 'Billing Last Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'billing_last_name'
 		],
-		'billing_address_1' => [
+		[
 			'label' => 'Billing Address',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'billing_address_1'
 		],
-		'billing_address_2' => [
+		[
 			'label' => 'Billing Address 2',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'billing_address_2'
 		],
-		'shipping_address_1' => [
+		[
 			'label' => 'Shipping Address',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'shipping_address_1'
 		],
-		'shipping_address_2' => [
+		[
 			'label' => 'Shipping Address 2',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'shipping_address_2'
 		],
-		'shipping_first_name' => [
+		[
 			'label' => 'Shipping First Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'=>'shipping_first_name'
 		],
-		'shipping_last_name' => [
+		[
 			'label' => 'Shipping Last Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE
+			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE,
+			'slug'=>'shipping_last_name'
 		],
-		'birthday' => [
+		[
 			'label' => 'Birthday',
-			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE
+			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE,
+			'slug'=>'birthday'
 		],
-		EncryptWP_Constants::EMAIL_META_KEY => [
+		[
 			'label' => null,
-			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE
+			'state' => EncryptWP_Field_State::ENCRYPTED_SEARCHABLE,
+			'slug'=>EncryptWP_Constants::EMAIL_META_KEY
 		]
 	];
 
@@ -98,8 +115,8 @@ class EncryptWP_Defaults {
 	 */
 	private static function convert_field_arrays_to_objects($field_arrays){
 		$fields = [];
-		foreach($field_arrays as $field_array){
-			$fields[] = new EncryptWP_Field($field_array['label'], $field_array['state']);
+		foreach($field_arrays as $slug=>$field_array){
+			$fields[] = new EncryptWP_Field($field_array['label'], $field_array['state'], $slug);
 		}
 		return $fields;
 	}

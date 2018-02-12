@@ -1,13 +1,10 @@
 <?php
 /**
- * @var $option_name string
- * @var $options EncryptWP_Options
- * @var $args array
- * @var $prefix string
+ * @var $encrypt_email bool
  */
 ?>
 
-<?php if(!$options->encrypt_email):?>
+<?php if(!$encrypt_email):?>
 	<div class="ewp-loading">
 	<svg class="lds-spinner" width="50px"  height="50px"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;"><g transform="rotate(0 50 50)">
 			<rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#ff727d">
@@ -60,16 +57,17 @@
 		</g></svg>
 </div>
 <?php endif; ?>
-<div class="ewp-encrypt-email-supported <?= $options->encrypt_email ? 'ewp-enabled' : 'ewp-disabled'?>">
-	<input id="encrypt_email_off" type="radio" name="<?= $option_name ?>[<?= $args['label_for'] ?>]" value="0" <?php checked($options->encrypt_email, false) ?>/>
-	<label for="encrypt_email_off"><?php esc_html_e('Off', $prefix); ?></label>
-
-	<input id="encrypt_email_on" type="radio" name="<?= $option_name ?>[<?= $args['label_for'] ?>]" value="1" <?php checked($options->encrypt_email, true) ?>/>
-	<label for="encrypt_email_on"><?php esc_html_e('On', $prefix); ?></label>
-
-	<p class="description">
-		<?php esc_html_e( 'Should EncryptWP automatically encrypt user email addresses?', $prefix ); ?>
-	</p>
+<div class="ewp-encrypt-email-supported <?= $encrypt_email ? 'ewp-enabled' : 'ewp-disabled'?>">
+	<div class="ewp-field-options">
+		<fieldset class="redux-field-container redux-field redux-container-button_set">
+			<div class="buttonset ui-buttonset">
+				<input type="radio" id="ewp_user_field_email_plain" name="encrypt_email" class="buttonset-item" value="0" <?php checked(false, $encrypt_email);?>/>
+				<label for="ewp_user_field_email_plain">No</label>
+				<input type="radio" id="ewp_user_field_email_encrypted" name="encrypt_email" class="buttonset-item" value="1" <?php checked(true, $encrypt_email);?>/>
+				<label for="ewp_user_field_email_encrypted">Yes</label>
+			</div>
+		</fieldset>
+	</div>
 </div>
 
 <p class="ewp-encrypt-email-unsupported">

@@ -13,6 +13,7 @@ jQuery.fn.htmlClean = function() {
 }
 
 jQuery(document).ready(function($) {
+    // Hide / Show the encrypt fields section when encrypt enabled is toggled
     $('input[name="encrypt_enabled"]').change(function(){
        var enabled = $('input[name="encrypt_enabled"]:checked').val();
        if(enabled == '1'){
@@ -22,6 +23,7 @@ jQuery(document).ready(function($) {
        }
     });
 
+    // Determine if email encryption is supported
     if(ENCRYPT_WP_ADMIN.options.encrypt_email== false){
         $.get(ENCRYPT_WP_ADMIN.encrypt_email_path, function(data){
             $('.ewp-loading').hide();

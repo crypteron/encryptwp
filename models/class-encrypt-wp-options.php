@@ -11,12 +11,12 @@ class EncryptWP_Options {
 	public $strict_mode = false;
 
 	/**
-	 * @var array[] - The user meta fields to encrypt and their settings
+	 * @var EncryptWP_Field[] - The user meta fields to encrypt and their settings
 	 */
 	public $user_meta_fields = null;
 
 	/**
-	 * @var array[] - The user fields to encrypt
+	 * @var EncryptWP_Field[] - The user fields to encrypt
 	 */
 	public $user_fields = null;
 

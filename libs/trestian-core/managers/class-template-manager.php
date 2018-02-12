@@ -108,7 +108,7 @@ class Template_Manager {
 		extract($data);
 
 		// Expose manager to template
-		$htm = $this;
+		$template_manager = $this;
 
 		// Launch the template!
 		require( $template );
@@ -126,7 +126,7 @@ class Template_Manager {
 		extract($data);
 
 		// Expose the template manager to template
-		$htm = $this;
+		$template_manager = $this;
 
 		// If return is true, capture the output and return it
 		if($return){

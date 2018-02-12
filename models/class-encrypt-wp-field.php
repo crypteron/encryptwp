@@ -6,12 +6,18 @@ class EncryptWP_Field {
 	public $label;
 
 	/**
+	 * @var string
+	 */
+	public $slug;
+
+	/**
 	 * @var EncryptWP_Field_State
 	 */
 	public $state;
 
-	public function __construct($label, $state) {
+	public function __construct($label, $state, $slug) {
 		$this->label = $label;
 		$this->state = $state;
+		$this->slug = $slug;
 	}
 }
