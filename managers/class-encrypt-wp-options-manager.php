@@ -71,4 +71,33 @@ class EncryptWP_Options_Manager{
 		update_option(EncryptWP_Constants::OPTION_NAME, $this->options);
 	}
 
+	/**
+	 * Loops through an indexed array of numeric strings fields and updates their corresponding EncryptWP field.
+	 *
+	 * @param $encrypt_wp_fields EncryptWP_Field[]
+	 * @param $fields string[]
+	 * @return  array
+	 *      updated bool - Whether a field was changed or not
+	 *      fields - Updated fields
+	 */
+	public function update_fields_from_array($encrypt_wp_fields, $fields){
+		$updated = false;
+		foreach($fields as $slug=>$state){
+			if(!isset($encrypt_wp_fields[$slug]))
+				throw new InvalidArgumentException(sprintf('Invalid encryption field: %s', $slug));
+
+			$ewp_field = $encrypt_wp_fields[$slug];
+			$state = intval($state);
+			if(!EncryptWP_Field_State::is_valid($state))
+				throw new InvalidArgumentException(sprintf('Invalid encryption state for field: %s (%s)', $ewp_field->label, $ewp_field->slug));
+
+			if($ewp_field->state != $state){
+				$encrypt_wp_fields[$slug]->state = $state;
+				$updated = true;
+			}
+		}
+
+		return ['updated' => $updated, 'fields'=>$encrypt_wp_fields];
+	}
+
 }

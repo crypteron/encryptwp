@@ -60,14 +60,31 @@ class Ajax_Manager{
 	 */
     public function check_missing_data($field, $message, $sanitize_text = true)
     {
-        if (!isset($_POST[$field]) || !strlen($_POST[$field])) {
+        if (!isset($_POST[$field]) || !strlen($_POST[$field]))
             $this->return_error($message);
-        } else if($sanitize_text){
+
+        if($sanitize_text)
         	return sanitize_text_field($_POST[$field]);
-        }
-        else {
-            return $_POST[$field];
-        }
+
+        return $_POST[$field];
+    }
+
+	/**
+	 * Fetches and optionally sanitizes an array from POST while triggering error if not an array
+	 * @param $field
+	 * @param $message
+	 * @param bool $sanitize_elements
+	 *
+	 * @return array
+	 */
+    public function check_missing_data_array($field, $message, $sanitize_elements = true){
+    	if(!is_array($_POST[$field]))
+    		$this->return_error($message);
+
+    	if($sanitize_elements)
+		    return array_map('sanitize_text_field', $_POST[$field]);
+
+        return $_POST[$field];
     }
 
 	/**

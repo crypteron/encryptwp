@@ -11,7 +11,7 @@ class EncryptWP_Field {
 	public $slug;
 
 	/**
-	 * @var EncryptWP_Field_State
+	 * @var int
 	 */
 	public $state;
 

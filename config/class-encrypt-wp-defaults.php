@@ -2,9 +2,10 @@
 class EncryptWP_Defaults {
 
 	private static $USER_FIELDS = [
-		'display_name' => [
+		[
 			'label' => 'Display Name',
-			'state' => EncryptWP_Field_State::ENCRYPTED
+			'state' => EncryptWP_Field_State::ENCRYPTED,
+			'slug'  =>'display_name'
 		]
 	];
 
@@ -115,8 +116,9 @@ class EncryptWP_Defaults {
 	 */
 	private static function convert_field_arrays_to_objects($field_arrays){
 		$fields = [];
-		foreach($field_arrays as $slug=>$field_array){
-			$fields[] = new EncryptWP_Field($field_array['label'], $field_array['state'], $slug);
+		foreach($field_arrays as $field_array){
+			$slug = $field_array['slug'];
+			$fields[$slug] = new EncryptWP_Field($field_array['label'], $field_array['state'], $slug);
 		}
 		return $fields;
 	}

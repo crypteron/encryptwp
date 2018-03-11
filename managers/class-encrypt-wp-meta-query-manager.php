@@ -7,6 +7,11 @@ class EncryptWP_Meta_Query_Manager{
 	 */
 	protected $encryptor;
 
+	/**
+	 * @var EncryptWP_Options
+	 */
+	protected $options;
+
 	private static $invalid_comparisons = array('>', '>=', '<', '<=', 'IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN', 'EXISTS', 'NOT EXISTS' );
 
 	/**
@@ -14,19 +19,22 @@ class EncryptWP_Meta_Query_Manager{
 	 *
 	 * @param Encryptor $encryptor
 	 */
-	public function __construct(Encryptor $encryptor) {
+	public function __construct(Encryptor $encryptor, EncryptWP_Options_Manager $options_manager) {
 		$this->encryptor = $encryptor;
+		$this->options = $options_manager->get_options();
 	}
 
-	public function parse_query_vars($qv, $secure_fields){
+	public function parse_query_vars($qv){
+
 		// Is a meta key provided?
 		if(!empty($qv['meta_key'])){
 			$key = $qv['meta_key'];
 
 			// Is meta key secure?
-			if(isset($secure_fields[$key])){
+			if(isset($this->options->user_meta_fields[$key])){
+				$field = $this->options->user_meta_fields[$key];
 				// If secure meta key NOT searchable, or unsupported meta compare is provided, clear out the meta key, value and compare
-				if($secure_fields[$key] === false || (!empty($qv['meta_compare']) && in_array($qv['meta_compare'], self::$invalid_comparisons)) ){
+				if($field->state !== EncryptWP_Field_State::ENCRYPTED_SEARCHABLE || (!empty($qv['meta_compare']) && in_array($qv['meta_compare'], self::$invalid_comparisons)) ){
 					$qv['meta_key'] = '';
 					$qv['meta_value'] = '';
 					$qv['meta_compare'] = '';
@@ -41,7 +49,7 @@ class EncryptWP_Meta_Query_Manager{
 
 		// Is a meta query provided
 		if(isset($qv['meta_query']) && is_array($qv['meta_query'])){
-			$qv['meta_query'] = $this->parse_meta_query($qv['meta_query'], $secure_fields);
+			$qv['meta_query'] = $this->parse_meta_query($qv['meta_query']);
 		}
 
 		return $qv;

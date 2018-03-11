@@ -41,6 +41,13 @@ jQuery(document).ready(function($) {
         $('.twpm-loading').hide();
     };
 
+    var scrollTo = function(){
+        var top = $(this).offset().top - 50;
+        $('html, body').animate({
+            scrollTop: top
+        }, 250);
+    };
+
     /**
      * Handle an AJAX success response with an alert and optional redirect
      * @param response
@@ -48,19 +55,19 @@ jQuery(document).ready(function($) {
      */
     var success = function(response){
         if(!response.hasOwnProperty('success')){
-            $('#twpm-alert-error').html(genericError('No success in AJAX response')).fadeIn();
+            $('#twpm-alert-error').html(genericError('No success in AJAX response')).fadeIn(scrollTo);
             return false;
         }
         if(!response.success){
             // Operation was not successful.  Display error message or default
             msg = response.message ? response.message : genericError('No error message returned');
-            $('#twpm-alert-error').html(msg).fadeIn();
+            $('#twpm-alert-error').html(msg).fadeIn(scrollTo);
             return false;
         }
 
         // Display any response messages
         if(response.message){
-            $('#twpm-alert-success').html(response.message).fadeIn();
+            $('#twpm-alert-success').html(response.message).fadeIn(scrollTo);
         }
 
         // Redirect to page
@@ -122,7 +129,7 @@ jQuery(document).ready(function($) {
      * @param errorThrown
      */
     var error = function(errorThrown){
-        $('#twpm-alert-error').text('An error has occurred.  Please contact support.  Error details: "' + errorThrown + '"').fadeIn();
+        $('#twpm-alert-error').text('An error has occurred.  Please contact support.  Error details: "' + errorThrown + '"').fadeIn(scrollTo);
     };
 
     /**

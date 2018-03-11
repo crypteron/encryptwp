@@ -30,36 +30,6 @@ class EncryptWP_User_Meta{
 	const WRITE_PRIORITY = 500;
 
 	/**
-	 * User meta fields to secure and whether or not they are searchable. TODO: store these fields in database with
-	 * admin page.
-	 * @var array
-	 */
-	public static $secure_meta_keys = array(
-		'billing_phone' => false,
-		'phone_number' => false,
-		'first_name' => false,
-		'last_name' => true,
-		'billing_email' => true,
-		'billing_first_name' => false,
-		'billing_last_name' => true,
-		'billing_address_1' => false,
-		'billing_address_2' => false,
-		'shipping_address_1' => false,
-		'shipping_address_2' => false,
-		'shipping_first_name' => false,
-		'shipping_last_name' => true,
-		'nickname' => false,
-		'birthday' => true,
-		EncryptWP_Constants::EMAIL_META_KEY => true,
-		"pmpro_bfirstname" => false,
-		"pmpro_blastname" => true,
-		"pmpro_baddress1" => false,
-		"pmpro_baddress2" => false,
-		"pmpro_bphone" => false,
-		"pmpro_bemail" => true
-	);
-
-	/**
 	 * EncryptWP_UserMeta constructor.
 	 *
 	 * @param EncryptWP_Encryption_Manager $encryptor
@@ -99,23 +69,10 @@ class EncryptWP_User_Meta{
 	 * @return bool
 	 */
 	public function update_meta_value($null, $user_id, $meta_key, $meta_value, $prev_value){
-		// Disregard if encryption disabled or non-secure fields
-		if(!$this->options->encrypt_enabled || !isset(self::$secure_meta_keys[$meta_key])){
-			return $null;
-		}
 
-		// Serialize objects / arrays before encrypting
-		$meta_value = maybe_serialize( $meta_value );
-
-		$searchable = self::$secure_meta_keys[$meta_key];
-
-		// If value is already encrypted, do nothing
-		if( $this->encryption_manager->is_encrypted($meta_value)){
-			return $null;
-		}
-
-		// Encrypt text
-		$encrypted_value = $this->encryption_manager->encrypt($meta_value, null, $searchable);
+		$encrypted_value = $this->encrypt_meta_value($null, $meta_key, $meta_value);
+		if($encrypted_value === $null)
+			return $encrypted_value;
 
 		// Remove this save meta filter so we can avoid an infinite loop
 		remove_filter('update_user_metadata', array($this, 'update_meta_value' ), self::WRITE_PRIORITY);
@@ -142,23 +99,9 @@ class EncryptWP_User_Meta{
 	 * @return bool
 	 */
 	public function add_meta_value($null, $user_id, $meta_key, $meta_value, $unique){
-		// Disregard if encryption disabled or non-secure fields
-		if(!$this->options->encrypt_enabled || !isset(self::$secure_meta_keys[$meta_key])){
-			return $null;
-		}
-
-		// Serialize objects / arrays before encrypting
-		$meta_value = maybe_serialize( $meta_value );
-
-		$searchable = self::$secure_meta_keys[$meta_key];
-
-		// If value is already encrypted, do nothing
-		if( $this->encryption_manager->is_encrypted($meta_value)){
-			return $null;
-		}
-
-		// Encrypt text
-		$encrypted_value = $this->encryption_manager->encrypt($meta_value, null, $searchable);
+		$encrypted_value = $this->encrypt_meta_value($null, $meta_key, $meta_value);
+		if($encrypted_value === $null)
+			return $encrypted_value;
 
 		// Remove this save meta filter so we can avoid an infinite loop
 		remove_filter('add_user_metadata', array($this, 'add_meta_value' ), self::WRITE_PRIORITY);
@@ -174,6 +117,31 @@ class EncryptWP_User_Meta{
 
 	}
 
+	private function encrypt_meta_value($null, $meta_key, $meta_value){
+		// Disregard if encryption disabled or non-secure fields
+		if(!$this->options->encrypt_enabled || !isset($this->options->user_meta_fields[$meta_key]))
+			return $null;
+
+		// Fetch details about field and return if plaintext
+		$field = $this->options->user_meta_fields[$meta_key];
+		if($field->state == EncryptWP_Field_State::PLAINTEXT)
+			return $null;
+
+		// Serialize objects / arrays before encrypting
+		$meta_value = maybe_serialize( $meta_value );
+
+		$searchable = $field->state === EncryptWP_Field_State::ENCRYPTED_SEARCHABLE;
+
+		// If value is already encrypted, do nothing
+		if( $this->encryption_manager->is_encrypted($meta_value)){
+			return $null;
+		}
+
+		// Return encrypted text
+		return $this->encryption_manager->encrypt($meta_value, null, $searchable);
+	}
+
+
 	/**
 	 * Decrypt meta values for sensitive meta keys
 	 * @param null $null - Always null
@@ -184,10 +152,9 @@ class EncryptWP_User_Meta{
 	 * @return bool|array|string
 	 */
 	public function get_meta_value($null, $user_id, $meta_key, $single){
-		// Disregard non-secure fields
-		if(!isset(self::$secure_meta_keys[$meta_key]) && $meta_key){
+		// If meta key is provided, ensure it's a secure field
+		if($meta_key && !isset($this->options->user_meta_fields[$meta_key]))
 			return $null;
-		}
 
 		// Turn off filter to fetch meta data through normal channels
 		remove_filter('get_user_metadata', array($this, 'get_meta_value' ), self::READ_PRIORITY);
@@ -201,12 +168,11 @@ class EncryptWP_User_Meta{
 		// No meta key was specified. Loop through each item in the array of meta keys and see if any of them are secure
 		if(!$meta_key){
 			foreach($value as $key => $item){
-				if(isset(self::$secure_meta_keys[$key])){
+				if(isset($this->options->user_meta_fields[$key])){
 					foreach($item as $sub_key => $sub_item){
 						$sub_item = $this->encryption_manager->decrypt($sub_item, null, 'user_meta', $meta_key);
 						$value[$key][$sub_key] = maybe_unserialize($sub_item);
 					}
-
 				}
 			}
 
@@ -239,7 +205,7 @@ class EncryptWP_User_Meta{
 	 * @param $query WP_User_Query
 	 */
 	public function transform_meta_query($query){
-		$query->query_vars = $this->meta_query_manager->parse_query_vars($query->query_vars, self::$secure_meta_keys);
+		$query->query_vars = $this->meta_query_manager->parse_query_vars($query->query_vars);
 		return;
 	}
 

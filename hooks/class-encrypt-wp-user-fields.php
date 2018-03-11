@@ -15,17 +15,6 @@ class EncryptWP_User_Fields {
 	 */
 	protected $options;
 
-	// TODO: store these fields in database and configure with settings
-	/**
-	 * @var array - User fields to encrypt and whether or not they are searchable. NOTE: user_login and user_nicename are
-	 * stored in DB with only 50 characters and cannot be encrypted. Encourage users not to use personal information
-	 * in usernames or generate a random username during registration. Login with email instead. Note, email is treated
-	 * differently due to size of field.
-	 * TODO: store these fields in database with admin page.
-	 */
-	public static $secure_fields = array(
-		'display_name' => false
-	);
 
 	/**
 	 * EncryptWP_User_Fields constructor.
@@ -40,54 +29,60 @@ class EncryptWP_User_Fields {
 
 	public function load_hooks(){
 		// Setup encrypted fields
-		foreach(self::$secure_fields as $field => $searchable){
-			if($searchable){
-				add_filter('pre_user_' . $field, array($this, 'save_field_searchable'), 500, 1);
-			} else {
-				add_filter('pre_user_' . $field, array($this, 'save_field'), 500, 1);
-			}
+		foreach($this->options->user_fields as $field){
 
-			// Filters for editing and displaying user fields and
-			add_filter('edit_user_' . $field, array($this, 'get_field'), 1, 2);
-			add_filter('user_' . $field, array($this, 'get_field'), 1, 2);
+			// Set up filter for saving
+			add_filter('pre_user_' . $field->slug, array($this, 'save_field_' . $field->slug), 500, 1);
+
+
+			// Setup filters for reading
+			add_filter('edit_user_' . $field->slug, array($this, 'get_field'), 1, 2);
+			add_filter('user_' . $field->slug, array($this, 'get_field'), 1, 2);
 			add_filter('the_author', array($this, 'decrypt_author'), 500, 1);
 			add_filter('wp_dropdown_users', array($this, 'decrypt_dropdown_users'), 500, 1);
 		}
 	}
 
-	/**
-	 * Internal method for encrypting a potentially searchable field, if it's not already encrypted
-	 * @param string $value - clear text
-	 * @param bool $searchable - whether text is searchable or not
-	 *
-	 * @return string - Encrypted record
-	 */
-	private function save_field_internal($value, $searchable = false){
-		// If value is already encrypted, do nothing
-		if( !$this->options->encrypt_enabled || $this->encryption_manager->is_encrypted($value) !== false){
+	public function __call($name, $arguments){
+		$prefix = 'save_field_';
+
+		if(strpos($name, $prefix) !== 0)
+			$this->invalid_method($name);
+
+		$slug = substr($name, strlen($prefix));
+		if(!isset($this->options->user_fields[$slug]))
+			$this->invalid_method($name);
+
+		if(!isset($arguments[0]))
+			$this->invalid_method_arg($name);
+
+		return $this->save_field($arguments[0], $slug);
+
+
+	}
+
+	private function save_field($value, $slug) {
+		// Fetch field details
+		$field = $this->options->user_fields[$slug];
+
+
+		// Ensure encryption is enabled, field is not plain text, and value is not already encrypted
+		if( !$this->options->encrypt_enabled || $field->state == EncryptWP_Field_State::PLAINTEXT || $this->encryption_manager->is_encrypted($value) !== false){
 			return $value;
 		}
 
 		// Encrypt value
-		$encrypted_value = $this->encryption_manager->encrypt($value, null, $searchable);
+		$encrypted_value = $this->encryption_manager->encrypt($value, null, $field->state === EncryptWP_Field_State::ENCRYPTED_SEARCHABLE);
 
 		return $encrypted_value;
 	}
 
-	/**
-	 * Save a non searchable secure field
-	 * @param string $value - cleartext
-	 */
-	public function save_field($value){
-		return $this->save_field_internal($value);
+	private function invalid_method($name){
+		trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
 	}
 
-	/**
-	 * Save a searchable secure field
-	 * @param string $value - cleartext
-	 */
-	public function save_field_searchable($value){
-		return $this->save_field_internal($value, true);
+	private function invalid_method_arg($name){
+		trigger_error('Missing argument 1 in call to '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
 	}
 
 	/**
@@ -110,3 +105,4 @@ class EncryptWP_User_Fields {
 		return $output;
 	}
 }
+

@@ -3,6 +3,8 @@
  * @var $option_group string
  * @var $prefix string
  * @var $options EncryptWP_Options
+ * @var $nonce string
+ * @var $action string
  * @var $template_manager \TrestianCore\v1\Template_Manager
  */
 ?>
@@ -11,6 +13,8 @@
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 	<div class="redux-container">
 		<form id="encrypt-wp-settings">
+			<input name="nonce" type="hidden" value="<?= $nonce ?>"/>
+			<input name="action" type="hidden" value="<?= $action ?>"/>
 			<div class="redux-main">
 				<table class="form-table">
 					<tbody>
@@ -39,8 +43,8 @@
 						</th>
 						<td>
 							<p class="description">Making encrypted text searchable adds performance and storage overhead. Only enable enable if you intend on searching users by that specific field.</p>
-							<?php $template_manager->load_template('templates/fields/content-encrypt-wp-admin-fields.php', ['fields'=>$options->user_fields]); ?>
-							<?php $template_manager->load_template('templates/fields/content-encrypt-wp-admin-fields.php', ['fields'=>$options->user_meta_fields]); ?>
+							<?php $template_manager->load_template('templates/fields/content-encrypt-wp-admin-fields.php', ['fields'=>$options->user_fields, 'type'=>'user_fields']); ?>
+							<?php $template_manager->load_template('templates/fields/content-encrypt-wp-admin-fields.php', ['fields'=>$options->user_meta_fields, 'type'=>'user_meta_fields']); ?>
 						</td>
 					</tr>
 					<tr class="ewp-field_encrypt_enabled ewp-field_encrypt_enabled-<?= $options->encrypt_enabled ? '1' : '0'?>">

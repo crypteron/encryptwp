@@ -35,9 +35,7 @@ class EncryptWP_Admin_Settings {
 	/**
 	 * @var string
 	 */
-	const ENCRYPT_ALL_ACTION = 'encryptwp_encrypt_all';
-
-	const DECRYPT_ALL_ACTION = 'encryptwp_decrypt_all';
+	const ACTION = 'encryptwp_admin_settings';
 
 	/**
 	 * EncryptWP_Admin_Settings constructor.
@@ -66,7 +64,7 @@ class EncryptWP_Admin_Settings {
 		add_action('update_option_' . EncryptWP_Constants::OPTION_NAME, array($this, 'refresh_options'), 10, 3);
 		add_action('admin_enqueue_scripts', array($this, 'load_styles'));
 		add_action('admin_enqueue_scripts', array($this, 'load_scripts'));
-		add_action('wp_ajax_' . self::ENCRYPT_ALL_ACTION, array($this, 'encrypt_all'));
+		add_action('wp_ajax_' . self::ACTION, array($this, 'update_settings'));
 	}
 
 	/**
@@ -106,7 +104,9 @@ class EncryptWP_Admin_Settings {
 		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings.php', array(
 			'prefix' => $this->settings->get_prefix(),
 			'option_group' => EncryptWP_Constants::OPTION_GROUP,
-			'options' => $this->options_manager->get_options()
+			'options' => $this->options_manager->get_options(),
+			'action' => self::ACTION,
+			'nonce' => wp_create_nonce(self::ACTION)
 		));
 	}
 
@@ -130,50 +130,91 @@ class EncryptWP_Admin_Settings {
 		wp_localize_script($this->settings->get_prefix() . '_admin_settings', 'ENCRYPT_WP_ADMIN', array(
 			'options' => $this->options_manager->get_options(),
 			'encrypt_email_path'=>$path,
-			'encrypt_all_nonce' => wp_create_nonce(self::ENCRYPT_ALL_ACTION),
-			'encrypt_all_action' => self::ENCRYPT_ALL_ACTION,
-			'decrypt_all_nonce' => wp_create_nonce(self::DECRYPT_ALL_ACTION),
-			'decrypt_all_action' => self::DECRYPT_ALL_ACTION,
-
 			));
 		wp_enqueue_script($this->settings->get_prefix() . '_admin_settings');
 	}
 
-	public function encrypt_all(){
-		$this->ajax_manager->validate_nonce();
+	public function update_settings(){
 		try {
-			$bulk_response = $this->bulk_encrypt_manager->encrypt_all_users();
-			$result = '';
 
-			if(!empty($bulk_response->users_error)){
-				$result .= '<strong>The following users failed to encrypt:</strong><br/>';
-				$result .= implode('<br/>', $bulk_response->users_error);
+
+			$this->ajax_manager->validate_nonce();
+			$options         = $this->options_manager->get_options();
+			$encrypt_enabled = $this->ajax_manager->check_missing_data( 'encrypt_enabled', 'Encrypt User Fields toggle is required' );
+			$encrypt_enabled = $encrypt_enabled === '1';
+
+			// Encryption still disabled
+			if ( ! $encrypt_enabled && ! $options->encrypt_enabled ) {
+				$this->ajax_manager->return_success( 'No changes made.' );
 			}
 
-			if(!empty($bulk_response->users_error) && !empty($bulk_response->users_success)){
-				$result .= '<br/>';
+			// Encryption now disabled. Ignore the rest of settings and update all users.
+			if ( ! $encrypt_enabled && $options->encrypt_enabled ) {
+				$options->encrypt_enabled = false;
+				$this->options_manager->update_options( $options );
+				$this->update_all_users();
 			}
-			if(!empty($bulk_response->users_success)){
-				$result .= '<strong>The following users were successfully encrypted:</strong><br/>';
-				$result .= implode('<br/>', $bulk_response->users_success);
+
+			// Assume we don't have to re-encrypt everything
+			$update_all_users = false;
+
+			// Encryption wasn't previously enabled. Bulk encryption required.
+			if ( ! $options->encrypt_enabled ) {
+				$options->encrypt_enabled = true;
+				$update_all_users = true;
 			}
 
+			// Validate required inputs
+			$user_fields      = $this->ajax_manager->check_missing_data_array( 'user_fields', 'Missing which user fields to encrypt' );
+			$user_meta_fields = $this->ajax_manager->check_missing_data_array( 'user_meta_fields', 'Missing which user meta fields to encrypt' );
+			$encrypt_email    = $this->ajax_manager->check_missing_data( 'encrypt_email', 'Missing encrypt email setting' );
+			$admin_notify     = $this->ajax_manager->check_missing_data( 'admin_notify', 'Missing encrypt admin email addresses' );
+			$strict_mode      = $this->ajax_manager->check_missing_data( 'strict_mode', 'Missing admin notification on insecure data setting' );
 
-			$this->ajax_manager->return_success($result);
+			// Update user fields and determine if bulk encryption is required
+			$result = $this->options_manager->update_fields_from_array($options->user_fields, $user_fields);
+			$options->user_fields = $result['fields'];
+			$update_all_users = $update_all_users || $result['updated'];
 
-		} catch(EncryptWP_Exception $e){
+			// Update user meta fields and determine if bulk encryption is required
+			$result  = $this->options_manager->update_fields_from_array($options->user_meta_fields, $user_meta_fields);
+			$options->user_meta_fields = $result['fields'];
+			$update_all_users = $update_all_users || $result['updated'];
+
+			// Determine if encrypt email was changed. If so bulk encryption is required.
+			$encrypt_email = $encrypt_email === '1';
+			if($options->encrypt_email != $encrypt_email){
+				$options->encrypt_email = $encrypt_email;
+				$update_all_users = true;
+			}
+
+			// Update strict mode and admin notification. Neither will require bulk encryption.
+			$options->strict_mode = $strict_mode === '1';
+			$options->admin_notify = array_map('trim', explode(',', $admin_notify));
+
+			// Update new options
+			$this->options_manager->update_options($options);
+
+			if ( !$update_all_users)
+				$this->ajax_manager->return_success( 'Settings updated.' );
+
+			$this->update_all_users();
+
+		} catch (Exception $e){
 			$this->ajax_manager->return_error($e->getMessage());
 		}
 	}
 
-	public function decrypt_all(){
+
+
+	public function update_all_users(){
 		$this->ajax_manager->validate_nonce();
 		try {
-			$bulk_response = $this->bulk_encrypt_manager->decrypt_all_user();
+			$bulk_response = $this->bulk_encrypt_manager->update_all_users();
 			$result = '';
 
 			if(!empty($bulk_response->users_error)){
-				$result .= '<strong>The following users failed to decrypt:</strong><br/>';
+				$result .= '<strong>The following users failed to update:</strong><br/>';
 				$result .= implode('<br/>', $bulk_response->users_error);
 			}
 
@@ -181,7 +222,7 @@ class EncryptWP_Admin_Settings {
 				$result .= '<br/>';
 			}
 			if(!empty($bulk_response->users_success)){
-				$result .= '<strong>The following users were successfully decrypted:</strong><br/>';
+				$result .= '<strong>The following users were successfully updated:</strong><br/>';
 				$result .= implode('<br/>', $bulk_response->users_success);
 			}
 
