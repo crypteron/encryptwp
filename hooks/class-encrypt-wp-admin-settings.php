@@ -33,6 +33,11 @@ class EncryptWP_Admin_Settings {
 	protected $bulk_encrypt_manager;
 
 	/**
+	 * @var EncryptWP_Key_Manager
+	 */
+	protected $key_manager;
+
+	/**
 	 * @var string
 	 */
 	const ACTION = 'encryptwp_admin_settings';
@@ -50,13 +55,16 @@ class EncryptWP_Admin_Settings {
 		EncryptWP_Options_Manager $options_manager,
 		Plugin_Settings $settings,
 		Ajax_Manager $ajax_manager,
-		EncryptWP_Bulk_Encrypt_Manager $bulk_encrypt_manager
+		EncryptWP_Bulk_Encrypt_Manager $bulk_encrypt_manager,
+		EncryptWP_Key_Manager $key_manager
+
 	) {
 		$this->template_manager = $template_manager;
 		$this->options_manager          = $options_manager;
 		$this->settings         = $settings;
 		$this->ajax_manager     = $ajax_manager;
 		$this->bulk_encrypt_manager = $bulk_encrypt_manager;
+		$this->key_manager = $key_manager;
 	}
 
 	public function load_hooks(){
@@ -100,13 +108,17 @@ class EncryptWP_Admin_Settings {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+		$key_defined = defined('CIPHER_CORE_KEY') && defined('CIPHER_CORE_TOKEN_KEY');
 
 		$this->template_manager->load_template('templates/content-encrypt-wp-admin-settings.php', array(
 			'prefix' => $this->settings->get_prefix(),
 			'option_group' => EncryptWP_Constants::OPTION_GROUP,
 			'options' => $this->options_manager->get_options(),
 			'action' => self::ACTION,
-			'nonce' => wp_create_nonce(self::ACTION)
+			'nonce' => wp_create_nonce(self::ACTION),
+			'key_defined' => $key_defined,
+			'key_new' => $key_defined ? false : $this->key_manager->generate_key(),
+			'token_key_new' => $key_defined ? false : $this->key_manager->generate_key()
 		));
 	}
 
@@ -192,13 +204,17 @@ class EncryptWP_Admin_Settings {
 			$options->strict_mode = $strict_mode === '1';
 			$options->admin_notify = array_map('trim', explode(',', $admin_notify));
 
-			// Update new options
+			// Update the options
 			$this->options_manager->update_options($options);
 
+			// No user update needed. Return successful
 			if ( !$update_all_users)
 				$this->ajax_manager->return_success( 'Settings updated.' );
 
+
+			// Bulk update all users
 			$this->update_all_users();
+
 
 		} catch (Exception $e){
 			$this->ajax_manager->return_error($e->getMessage());

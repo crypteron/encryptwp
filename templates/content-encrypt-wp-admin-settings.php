@@ -6,11 +6,21 @@
  * @var $nonce string
  * @var $action string
  * @var $template_manager \TrestianCore\v1\Template_Manager
+ * @var $key_defined bool
+ * @var $key_new string | bool
+ * @var $token_key_new = string | bool
  */
 ?>
 
 <div class="wrap ewp-settings">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<?php if(!$key_defined):?>
+		<p>No encryption keys defined. Copy the following into wp-config.php:</p>
+<pre><code>define('CIPHER_CORE_KEY', '<?= $key_new ?>');
+define('CIPHER_CORE_TOKEN_KEY', '<?= $token_key_new ?>');
+</code></pre>
+	<?php endif;?>
+
 	<div class="redux-container">
 		<form id="encrypt-wp-settings">
 			<input name="nonce" type="hidden" value="<?= $nonce ?>"/>

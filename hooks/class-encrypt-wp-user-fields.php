@@ -15,6 +15,9 @@ class EncryptWP_User_Fields {
 	 */
 	protected $options;
 
+	const PREFIX_SAVE = 'save_field_';
+
+	const PREFIX_GET = 'get_field_';
 
 	/**
 	 * EncryptWP_User_Fields constructor.
@@ -32,32 +35,67 @@ class EncryptWP_User_Fields {
 		foreach($this->options->user_fields as $field){
 
 			// Set up filter for saving
-			add_filter('pre_user_' . $field->slug, array($this, 'save_field_' . $field->slug), 500, 1);
+			add_filter('pre_user_' . $field->slug, array($this, self::PREFIX_SAVE . $field->slug), 500, 1);
 
 
 			// Setup filters for reading
-			add_filter('edit_user_' . $field->slug, array($this, 'get_field'), 1, 2);
-			add_filter('user_' . $field->slug, array($this, 'get_field'), 1, 2);
+			add_filter('edit_user_' . $field->slug, array($this, self::PREFIX_GET . $field->slug), 1, 2);
+			add_filter('user_' . $field->slug, array($this, self::PREFIX_GET . $field->slug), 1, 2);
 			add_filter('the_author', array($this, 'decrypt_author'), 500, 1);
 			add_filter('wp_dropdown_users', array($this, 'decrypt_dropdown_users'), 500, 1);
 		}
 	}
 
+	/**
+	 * Magic method to determine slug from function call, e.g. edit_user_display_name or get_user_display_name
+	 * @param $name
+	 * @param $arguments
+	 *
+	 * @return string
+	 */
 	public function __call($name, $arguments){
-		$prefix = 'save_field_';
+		if(strpos($name, self::PREFIX_SAVE) === 0)
+			return $this->save_generic( $name, $arguments );
 
-		if(strpos($name, $prefix) !== 0)
+		if(strpos($name, self::PREFIX_GET) === 0)
+			return $this->get_generic( $name, $arguments );
+
+
+
+		$this->invalid_method($name);
+
+		$prefix_save = 'save_field_';
+		$prefix_get = 'get_field_';
+
+		if(strpos($name, $prefix_save) !== 0 && strpos($name, $prefix_get) !== 0)
 			$this->invalid_method($name);
 
+
+	}
+
+	private function get_and_validate_slug($prefix, $name){
 		$slug = substr($name, strlen($prefix));
 		if(!isset($this->options->user_fields[$slug]))
 			$this->invalid_method($name);
+
+		return $slug;
+	}
+	private function save_generic($name, $arguments){
+		$slug = $this->get_and_validate_slug(self::PREFIX_SAVE, $name);
 
 		if(!isset($arguments[0]))
 			$this->invalid_method_arg($name);
 
 		return $this->save_field($arguments[0], $slug);
+	}
 
+	private function get_generic($name, $arguments){
+		$slug = $this->get_and_validate_slug(self::PREFIX_GET, $name);
+
+		if(count($arguments) != 2)
+			$this->invalid_method_arg($name);
+
+		return $this->get_field($arguments[0], $arguments[1], $slug);
 
 	}
 
@@ -92,8 +130,8 @@ class EncryptWP_User_Fields {
 	 *
 	 * @return string - cleartext
 	 */
-	public function get_field($value, $user_id){
-		return $this->encryption_manager->decrypt( $value, null, 'user');
+	public function get_field($value, $user_id, $slug){
+		return $this->encryption_manager->decrypt( $value, null, 'user', $slug);
 	}
 
 	public function decrypt_author($author){

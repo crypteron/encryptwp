@@ -118,8 +118,8 @@ class EncryptWP_User_Meta{
 	}
 
 	private function encrypt_meta_value($null, $meta_key, $meta_value){
-		// Disregard if encryption disabled or non-secure fields
-		if(!$this->options->encrypt_enabled || !isset($this->options->user_meta_fields[$meta_key]))
+		// Ensure encryption is enabled, the field is sensitive, and the field is not plaintext
+		if(!($this->options->encrypt_enabled && isset($this->options->user_meta_fields[$meta_key]) && $this->options->user_meta_fields[$meta_key]->state != EncryptWP_Field_State::PLAINTEXT))
 			return $null;
 
 		// Fetch details about field and return if plaintext
@@ -152,8 +152,12 @@ class EncryptWP_User_Meta{
 	 * @return bool|array|string
 	 */
 	public function get_meta_value($null, $user_id, $meta_key, $single){
-		// If meta key is provided, ensure it's a secure field
-		if($meta_key && !isset($this->options->user_meta_fields[$meta_key]))
+		// Ensure encryption is enabled
+		if(!$this->options->encrypt_enabled)
+			return $null;
+
+		// If meta key is provided, ensure it's a secure field and not plain text
+		if($meta_key && !(isset($this->options->user_meta_fields[$meta_key]) && $this->options->user_meta_fields[$meta_key]->state != EncryptWP_Field_State::PLAINTEXT))
 			return $null;
 
 		// Turn off filter to fetch meta data through normal channels
@@ -165,10 +169,10 @@ class EncryptWP_User_Meta{
 		// Re-Add the filter for future requests
 		$this->register_get_user_meta_filter();
 
-		// No meta key was specified. Loop through each item in the array of meta keys and see if any of them are secure
+		// No meta key was specified. Loop through each item in the array of meta keys and see if any of them are secure and not plaintext
 		if(!$meta_key){
 			foreach($value as $key => $item){
-				if(isset($this->options->user_meta_fields[$key])){
+				if(isset($this->options->user_meta_fields[$key]) && $this->options->user_meta_fields[$key] != EncryptWP_Field_State::PLAINTEXT){
 					foreach($item as $sub_key => $sub_item){
 						$sub_item = $this->encryption_manager->decrypt($sub_item, null, 'user_meta', $meta_key);
 						$value[$key][$sub_key] = maybe_unserialize($sub_item);

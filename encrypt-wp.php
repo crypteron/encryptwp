@@ -130,6 +130,7 @@ class EncryptWP{
 		require_once $this->plugin_path . 'managers/class-encrypt-wp-encryption-manager.php';
 		require_once $this->plugin_path . 'managers/class-encrypt-wp-error-manager.php';
 		require_once $this->plugin_path . 'managers/class-encrypt-wp-bulk-encrypt-manager.php';
+		require_once $this->plugin_path . 'managers/class-encrypt-wp-key-manager.php';
 		require_once $this->plugin_path . 'managers/class-encrypt-wp-email-search-manager.php';
 
 		// Config
@@ -160,8 +161,15 @@ class EncryptWP{
 	private function setup_dependency_injection(){
 		$dice = TrestianCore::setup($this->plugin_name, $this->version, $this->plugin_url, $this->plugin_path, $this->prefix);
 
-		// Set all objects to be created as shared instance
-		$dice->addRule('*', ['shared'=>true]);
+		// Set all objects to be created as shared instance and Key Server Client
+		$dice->addRule('*', [
+			'shared'=>true,
+			'substitutions' => [
+				'CipherCore\\v1\\IKeyServerClient' => [
+					'instance'=>'CipherCore\\v1\\Key_Server_Client'
+				]
+			]
+		]);
 
 		// Fetch the plugin options
 		/**

@@ -19,4 +19,8 @@ class Settings {
 		return $this->strict;
 	}
 
+	public function set_strict($strict){
+		$this->strict = $strict;
+	}
+
 }

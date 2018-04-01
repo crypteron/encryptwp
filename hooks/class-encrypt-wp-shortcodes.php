@@ -1,14 +1,21 @@
 <?php
 use CipherCore\v1\Encryptor;
+use CipherCore\v1\IKeyServerClient;
 
 class EncryptWP_Shortcodes {
 	/**
 	 * @var Encryptor
 	 */
-	protected $encryptor;
+	protected $encryption_manager;
 
-	public function __construct(Encryptor $encryptor) {
-		$this->encryptor = $encryptor;
+	/**
+	 * @var IKeyServerClient
+	 */
+	protected $key_manager;
+
+	public function __construct(EncryptWP_Encryption_Manager $encryption_manager, EncryptWP_Key_Manager $key_manager ) {
+		$this->encryption_manager = $encryption_manager;
+		$this->key_manager        = $key_manager;
 	}
 
 	public function load_hooks(){
@@ -19,34 +26,26 @@ class EncryptWP_Shortcodes {
 	}
 
 	public function encrypt($args, $content){
-		return encrypt_wp()->encryptor()->encrypt($content, null, false);
+		return $this->encryption_manager->encrypt($content, null, false);
 	}
 
 	public function decrypt($args, $content){
-		return encrypt_wp()->encryptor()->decrypt($content, null, 'shortcode' );
+		return $this->encryption_manager->decrypt($content, null, 'shortcode' );
 	}
 
 	public function generate_key($args){
-		return $this->encryptor->key_server_client->generate_key();
+		return $this->key_manager->generate_key();
 	}
 
 	public function search($atts){
 		$atts = shortcode_atts(array(
-			'key' => 'first_name',
-			'value' => 'Yaron'
+			'key' => 'last_name',
+			'value' => 'Guez'
 		), $atts, 'EncryptWP_Search');
 
 		$args = array(
 			'meta_key' => $atts['key'],
-			'meta_value' => $atts['value'],
-			'meta_query' => array(
-				'relation' => 'AND',
-				array(
-					'key' => 'secure_user_email',
-					'value' => 'Yaron@trestian.com',
-					'compare' => 'LIKE'
-				)
-			)
+			'meta_value' => $atts['value']
 		);
 
 		$query = new WP_User_Query($args);

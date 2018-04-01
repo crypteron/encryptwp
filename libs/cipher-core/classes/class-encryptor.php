@@ -10,7 +10,7 @@ class Encryptor {
 	/**
 	 * @var IKeyServerClient
 	 */
-	public $key_server_client;
+	protected $key_server_client;
 
 	/**
 	 * @var Serializer
@@ -22,8 +22,8 @@ class Encryptor {
 	 */
 	protected $settings;
 
-	public function __construct(Settings $settings) {
-		$this->key_server_client = new Key_Server_Client();
+	public function __construct(Settings $settings, IKeyServerClient $key_server_client) {
+		$this->key_server_client = $key_server_client;
 		$this->serializer = new Serializer();
 		$this->settings = $settings;
 	}
@@ -261,5 +261,12 @@ class Encryptor {
 		}
 
 		return $clear_text;
+	}
+
+	/**
+	 * @param $strict_mode
+	 */
+	public function set_strict_mode($strict_mode){
+		$this->settings->set_strict($strict_mode);
 	}
 }

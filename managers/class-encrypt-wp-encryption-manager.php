@@ -127,4 +127,10 @@ class EncryptWP_Encryption_Manager {
 		return '^' . preg_quote($prefix);
 	}
 
+	/**
+	 * @param $strict_mode
+	 */
+	public function set_strict_mode($strict_mode){
+		$this->encryptor->set_strict_mode($strict_mode);
+	}
 }
