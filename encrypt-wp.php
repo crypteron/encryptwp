@@ -68,6 +68,11 @@ class EncryptWP{
 	protected $email_pluggable;
 
 	/**
+	 * @var EncryptWP_Options
+	 */
+	protected $options;
+
+	/**
 	 * @var \Dice\Dice
 	 */
 	protected $dice;
@@ -176,11 +181,11 @@ class EncryptWP{
 		 * @var $options_manager EncryptWP_Options_Manager
 		 */
 		$options_manager = $dice->create('EncryptWP_Options_Manager');
-		$options = $options_manager->get_options();
+		$this->options = $options_manager->get_options();
 
 
 		// Enable or disable strict mode.
-		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[$options->strict_mode]]);
+		$dice->addRule('CipherCore\\v1\\Settings', ['constructParams'=>[$this->options->strict_mode]]);
 
 		return $dice;
 	}
@@ -203,6 +208,22 @@ class EncryptWP{
 	 */
 	public function encryptor(){
 		return $this->dice->create('EncryptWP_Encryption_Manager');
+	}
+
+	/**
+	 * Public getter for encryption enabled option. Used by pluggable hack.
+	 * @return bool
+	 */
+	public function encrypt_enabled(){
+		return $this->options->encrypt_enabled;
+	}
+
+	/**
+	 * Public getter for encrypt email option. Used by pluggable hack.
+	 * @return bool
+	 */
+	public function encrypt_email_enabled(){
+		return $this->options->encrypt_email;
 	}
 
 	public function set_current_user_filter(){

@@ -36,6 +36,20 @@ class EncryptWP_Bulk_Encrypt_Manager {
 				}
 			}
 
+			// Special decryption logic for encrypt email
+			if(!$this->options->encrypt_enabled || !$this->options->encrypt_email){
+				// See if original email is obfuscated
+				if($user->user_email == sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user->ID)){
+					// Fetch encrypted email from user meta
+					$user->user_email = get_user_meta($user->ID, EncryptWP_Constants::EMAIL_META_KEY, true);
+
+					// Since the email meta key is an internal field, it will always be enabled for encryption and will
+					// automatically decrypt unless all encryption is disabled
+					if(!$this->options->encrypt_enabled)
+						$user->user_email = $this->encryption_manager->decrypt($user->user_email, null, 'user', 'email');
+				}
+			}
+
 			// Remove any secure user meta from fields updated within wp_update_user so we can handle their logic below instead
 			add_filter('insert_user_meta', array($this, 'remove_user_meta'), 10, 3);
 

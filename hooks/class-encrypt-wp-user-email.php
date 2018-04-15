@@ -55,7 +55,7 @@ class EncryptWP_User_Email {
 	 */
 	public function encrypt_email($user_id){
 		// Don't do anything if email encryption is turned off.
-		if(!$this->options->encrypt_email){
+		if(!$this->options->encrypt_enabled || !$this->options->encrypt_email){
 			return;
 		}
 
@@ -86,6 +86,9 @@ class EncryptWP_User_Email {
 	}
 
 	public function decrypt_email($value, $user_id){
+		if(!$this->options->encrypt_enabled || !$this->options->encrypt_email)
+			return $value;
+
 		// See if email is obfuscated or not
 		if($value != sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user_id)){
 			// If email is not obfuscated either return it or trigger error in secure mode.
@@ -119,7 +122,7 @@ class EncryptWP_User_Email {
 	 */
 	public function search_email($query){
 		// If email encryption is turned off, do nothing
-		if(!$this->options->encrypt_email){
+		if(!$this->options->encrypt_enabled || !$this->options->encrypt_email){
 			return;
 		}
 

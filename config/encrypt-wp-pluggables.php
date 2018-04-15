@@ -12,7 +12,7 @@
  * @return WP_User|false WP_User object on success, false on failure.
  */
 function get_user_by( $field, $value ) {
-	if($field == 'email'){
+	if($field == 'email' && encrypt_wp()->encrypt_enabled() && encrypt_wp()->encrypt_email_enabled()){
 		$users = get_users(array('meta_key'=>EncryptWP_Constants::EMAIL_META_KEY, 'meta_value'=>strtolower($value)));
 		if(empty($users)){
 			return false;

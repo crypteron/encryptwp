@@ -209,6 +209,9 @@ class EncryptWP_User_Meta{
 	 * @param $query WP_User_Query
 	 */
 	public function transform_meta_query($query){
+		if(!$this->options->encrypt_enabled)
+			return;
+
 		$query->query_vars = $this->meta_query_manager->parse_query_vars($query->query_vars);
 		return;
 	}
