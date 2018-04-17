@@ -17,7 +17,7 @@ class EncryptWP_Options_Manager{
 	private function load_options(){
 
 		$options = get_option(EncryptWP_Constants::OPTION_NAME);
-		if($options === false)
+		if($options === false || !($options instanceof EncryptWP_Options))
 			$options = new EncryptWP_Options();
 
 		$options = $this->set_defaults($options);
