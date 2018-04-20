@@ -7,8 +7,8 @@
  *
  * @wordpress-plugin
  * Plugin Name:       EncryptWP
- * Plugin URI:        https://bitbucket.org/Crypteron/cipherwp
- * Description:       Adds military grade encryption and tamper protection to WordPress
+ * Plugin URI:        https://crypteron.com/encryptwp
+ * Description:       Adds military-grade encryption and tamper protection to WordPress user data
  * Version:           1.1.2
  * Author:            Crypteron
  * Author URI:        https://crypteron.com
@@ -16,8 +16,8 @@
  * License URI:       http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain:       encryptwp
  * Domain Path:       /languages
- * BitBucket Plugin URI: https://bitbucket.org/Crypteron/encryptwp
- * BitBucket Branch: master
+ * GitHub Plugin URI: https://github.com/crypteron/encryptwp
+ * GitHub Branch: master
  */
 use TrestianCore\v1\TrestianCore;
 
