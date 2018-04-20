@@ -59,8 +59,12 @@ class EncryptWP_User_Email {
 			return;
 		}
 
-		// Fetch user email and convert to lowercase
+		// Fetch user email and ensure it's not already obfuscated (to prevent double encryption)
 		$user = get_user_by('id', $user_id);
+		if($user->user_email == sprintf(EncryptWP_Constants::OBFUSCATE_EMAIL_PATTERN, $user_id))
+			return;
+
+		// convert to lowercase
 		$user_email = strtolower($user->user_email);
 
 		// Store it in user meta. Note, EncryptWP_UserMeta will automatically encrypt it
