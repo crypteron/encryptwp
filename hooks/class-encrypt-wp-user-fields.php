@@ -135,11 +135,24 @@ class EncryptWP_User_Fields {
 	}
 
 	public function decrypt_author($author){
+		if(!$this->options->encrypt_enabled || !isset($this->options->user_fields['display_name']) || $this->options->user_fields['display_name']->state == EncryptWP_Field_State::PLAINTEXT)
+			return $author;
+
 		return $this->encryption_manager->decrypt($author, null, 'user', 'display_name');
 	}
 
 	public function decrypt_dropdown_users($output){
-		// TODO: regEx match <option value="XX" selected="selected">ENCRYPTED_DISPLAY_NAME (UserLogin)</option>
+		if(!$this->options->encrypt_enabled || !isset($this->options->user_fields['display_name']) ||  $this->options->user_fields['display_name']->state == EncryptWP_Field_State::PLAINTEXT)
+			return $output;
+
+
+		$output = preg_replace_callback("/(<option value='\d+'(?: selected='selected')*>)(.+)( \([[A-Za-z0-9 _.\-@]+\)<\/option>)/", function( $matches){
+			if(count($matches) != 4)
+				return $matches[0];
+			$display_name = $this->encryption_manager->decrypt($matches[2], null, 'user', 'display_name');
+			return $matches[1] . $display_name . $matches[3];
+		}, $output);
+
 		return $output;
 	}
 }
