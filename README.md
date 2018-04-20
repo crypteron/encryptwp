@@ -1,4 +1,4 @@
-# EncryptWO
+# EncryptWP
 EncryptWP adds military-grade encryption and tamper protection to WordPress user data. 
 
 **WARNING:** This plugin is in public beta. There may very well be bugs and plugin incompatibilities, especially when decrypting user->display_name. 
