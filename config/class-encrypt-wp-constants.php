@@ -10,7 +10,7 @@ class EncryptWP_Constants {
 	/**
 	 * Replacement pattern for obfuscating emails in wp_users.
 	 */
-	const OBFUSCATE_EMAIL_PATTERN = "secure_%d@hifoo.com";
+	const OBFUSCATE_EMAIL_PATTERN = "secure_%d@encryptwp.com";
 
 	const OPTION_GROUP = 'encryptwp';
 
