@@ -6,4 +6,4 @@ EncryptWP adds military-grade encryption and tamper protection to WordPress user
 
 For plugin updates during the beta process, use the [GitHub Updater Plugin](https://github.com/afragen/github-updater)
 
-*More Details to Come!*
+For detailed instructions on how to use the plugin, please visit [https://www.crypteron.com/encryptwp/beta/](https://www.crypteron.com/encryptwp/beta/).
